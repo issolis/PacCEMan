@@ -7,9 +7,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <WinSock2.h>
-
 #pragma comment(lib, "ws2_32.lib")
 
+int points=0; 
 SOCKET serverSocket;
 
 int matrix[15][15] = {
@@ -273,7 +273,6 @@ void showRoute(struct node *finalNode){
 }
 
 void blockNodes (){
-
     for (int i=0; i<8; i++){
         for (int j=0; j<8; j++){
             if (matrix[i][j]==1)
@@ -399,6 +398,33 @@ void constructor(){
 /////////////////////////////////////Server/////////
 ////////////////////////////////////////////////////
 //-----------------------Server-------------------//
+void restart(){
+   int matrix_[15][15] ={
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0},
+            {0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0},
+            {0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0},
+            {0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
+            {0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0},
+            {0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+            {0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0},
+            {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+        };
+
+        for (int i = 0; i<15; i++){
+            for(int j = 0; j<15; j++){
+                matrix[i][j] = matrix_[i][j]; 
+            }
+        }
+    points = 0; 
+}
+
 
 int initServer(int serverPort) {
     WSADATA wsaData;
@@ -509,8 +535,25 @@ void receiveMessage() {
                 response = "true"; 
             }
         }
+        else if (buffer[0] == 'S'){
+            int pacY = extractNumber(buffer, 1); 
+            int pacX = extractNumber(buffer, 2); 
 
-        
+            if (matrix[pacY][pacX] == 0 ){
+                matrix[pacY][pacX] = -1; 
+                points+=250;
+                char cadena[20]; 
+                sprintf(cadena, "%d", points);
+                response = cadena; 
+            }
+            else
+                response = "empty";
+            
+        }
+        else if (buffer[0] == 'N'){
+            restart(); 
+            response = "REINICIO"; 
+        }
         send(clientSocket, response, strlen(response), 0);
         strcpy(route, ""); 
     }
