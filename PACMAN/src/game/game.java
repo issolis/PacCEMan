@@ -72,12 +72,12 @@ public class game {
     /////////////////////////////////////////
     //--------------------------------------//
 
-    ghostOne = new ghost ("1", ground); 
-    ghostOne.setImage();
-    ghostOne.addLabel();
-    ghostOne.move(336, 336);
+        ghostOne = new ghost ("1", ground); 
+        ghostOne.setImage();
+        ghostOne.addLabel();
+        ghostOne.move(336, 336);
 
-    //--------------------------------------//
+    //-------------Score Label-----------------//
     
 
         pointsLb = new JLabel("Score: 0");
@@ -90,6 +90,7 @@ public class game {
 
 
      //--------------------------------------//
+     //-------------Start game---------------//
     
         matrix = table();
         blockMatrix = new JLabel[15][15];  
