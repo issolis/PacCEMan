@@ -424,7 +424,7 @@ void restart(){
                 matrix[i][j] = matrix_[i][j]; 
             }
         }
-    points = 0; 
+
 }
 
 
@@ -500,69 +500,7 @@ void receiveMessage() {
 
             response = route; 
         }
-        else if (buffer[0] == 'R'){
-            int pacY = extractNumber(buffer, 1); 
-            int pacX = extractNumber(buffer, 2); 
-
-            if (pacY+1==15 || matrix[pacX][pacY+1]==1)
-                response = "false"; 
-            else{
-                response = "true"; 
-            }
-        }
-        else if (buffer[0] == 'L'){
-            int pacY = extractNumber(buffer, 1); 
-            int pacX = extractNumber(buffer, 2); 
-            if (pacY-1==-1 || matrix[pacX][pacY-1]==1)
-                response = "false"; 
-            else{
-                response = "true"; 
-            }
-        }
-        else if (buffer[0] == 'U'){
-            int pacY = extractNumber(buffer, 1); 
-            int pacX = extractNumber(buffer, 2); 
-            if (pacX-1==-1 || matrix[pacX-1][pacY]==1)
-                response = "false"; 
-            else{
-                response = "true"; 
-            }
-        }
-        else if (buffer[0] == 'D'){
-            int pacY = extractNumber(buffer, 1); 
-            int pacX = extractNumber(buffer, 2); 
-            if (pacX+1==15 || matrix[pacX+1][pacY]==1)
-                response = "false"; 
-            else{
-                response = "true"; 
-            }
-        }
-        else if (buffer[0] == 'S'){
-            int pacY = extractNumber(buffer, 1); 
-            int pacX = extractNumber(buffer, 2); 
-
-            if (matrix[pacY][pacX] == 0 ){
-                matrix[pacY][pacX] = -1; 
-                points+=250;
-                char cadena[20]; 
-                sprintf(cadena, "%d", points);
-                response = cadena; 
-            }
-            else
-                response = "empty";
-            
-        }
-        else if (buffer[0] == 'N'){
-            restart(); 
-            response = "REINICIO"; 
-        }
-        else if (buffer[0] == '1'){
-            int posGO = extractNumber(buffer, 1); 
-
-            if (posGO == ghostOneFP || ghostOneFP == -1)
-                response = "true"; 
-                
-        }
+        
         send(clientSocket, response, strlen(response), 0);
         strcpy(route, ""); 
     }

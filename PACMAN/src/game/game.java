@@ -30,11 +30,11 @@ public class game {
 
     client moveClient = new client();
     client pointsClient = new client();
+    client ghostOneClient = new client();  
 
     JLabel pointsLb;
 
     String points = "0";
-
 
     object ghostOne; 
 
@@ -106,9 +106,11 @@ public class game {
         }
 
         this.moveClient.sendMessage("N");
+        
         direcction();
         showPoints();
         move(); 
+        moveGhostOne();
 
         gamePanel.add(ground);
         window.add(gamePanel);
@@ -139,6 +141,11 @@ public class game {
         return maze; 
     }
     
+    //----------------------------------------//
+    ////////////////////////////////////////////
+    ////////////Player functionalities/////////
+    ///////////////////////////////////////////
+    
     void showPoints(){
         Timer timer = new Timer(200, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -158,7 +165,7 @@ public class game {
                     int pacX = pacManLocation.x/24; 
                     int pacY = pacManLocation.y/24;
 
-                    checkPoints(pacX, pacY); 
+                    checkPoints(pacX+1, pacY); 
 
                 }
                 else if(left && checkBlockedPosition(2)){
@@ -168,7 +175,7 @@ public class game {
                     int pacX = pacManLocation.x/24; 
                     int pacY = pacManLocation.y/24;
 
-                    checkPoints(pacX, pacY); 
+                    checkPoints(pacX-1, pacY); 
 
                 }
                 else if(up && checkBlockedPosition(3)){
@@ -178,7 +185,7 @@ public class game {
                     int pacX = pacManLocation.x/24; 
                     int pacY = pacManLocation.y/24;
 
-                    checkPoints(pacX, pacY); 
+                    checkPoints(pacX, pacY-1); 
 
                 }
                 else if(down && checkBlockedPosition(4)){
@@ -188,7 +195,7 @@ public class game {
                     int pacX = pacManLocation.x/24; 
                     int pacY = pacManLocation.y/24;
 
-                    checkPoints(pacX, pacY); 
+                    checkPoints(pacX, pacY+1); 
                 }
 
             }
@@ -295,5 +302,36 @@ public class game {
             }
         }
     }
+    //----------------------------------------//
+    //----------------------------------------//
+    ////////////////////////////////////////////
+    ////////////Ghost functionalities//////////
+    //////////////////////////////////////////
 
+    int convertToId(int X, int Y){
+        return X%15+Y*15; 
+    }
+
+    void moveGhostOne(){
+        Timer timer = new Timer(5000, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Point ghostLocation = ghostOne.getLocation(); 
+                
+                int ghostX  = ghostLocation.x/24; 
+                int ghostY  = ghostLocation.y/24; 
+                int ghostID = convertToId(ghostX, ghostY); 
+                ghostOneClient.sendMessage("1 "+ghostID);
+                if (ghostOneClient.response.contentEquals("true")){
+                    Point pacManLocation = pacManJLabel.getLocation(); 
+
+                    int pacX = pacManLocation.x/24;
+                    int pacY = pacManLocation.y/24; 
+                    int pacManID = convertToId(pacX, pacY); 
+                    ghostOneClient.sendMessage("p "+ghostID+" "+pacManID);
+                    System.out.println(ghostOneClient.response);
+                }
+            }
+        });
+        timer.start();
+    }
 }

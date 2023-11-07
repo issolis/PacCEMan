@@ -19,6 +19,26 @@ public class list {
         }
     }
 
+    public void convertStringToList(String str){
+        int len = str.length();
+        int pos = 0;
+        for (int i=0; i<len; i++){
+            if (str.charAt(i)==' '){
+                insertElement(Integer.parseInt(str.substring(pos, i)));
+                pos = i +1; 
+            }
+            if (i == len -1){
+                 insertElement(Integer.parseInt(str.substring(pos, i+1)));
+            }
+
+        }
+    }
+    public void deleteFirst (){
+        if (head == null)
+            return; 
+        head = head.next;
+    }
+
     public void show(){
         node current = head; 
         while(current!=null){
@@ -26,5 +46,6 @@ public class list {
             current = current.next;
         }
     }
+
 
 }
