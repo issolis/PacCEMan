@@ -43,6 +43,7 @@ public class game {
     client ghostThreeClient = new client(12345);  
     client ghostFourClient = new client(12345); 
     client fruitClient = new client(12345);
+    client powerUpClient = new client(12345);
 
     JLabel pointsLb;
     String points = "0";
@@ -61,6 +62,7 @@ public class game {
     list ghostFourRoute = new list();
 
     listPanel fruitList = new listPanel(); 
+    listPanel powerUpList = new listPanel(); 
 
     boolean againstPacMan = true;
     boolean attackPos = true;
@@ -174,6 +176,7 @@ public class game {
         moveGhostThree();
         moveGhostFour();
         checkCollision();
+        powerUp();
         fruitGenerator();
 
         gamePanel.add(ground);
@@ -252,7 +255,7 @@ public class game {
                     }
 
                 }else{
-
+                    
                 }
             }
         });
@@ -400,7 +403,7 @@ public class game {
     
     void checkPoints(int pacX, int pacY){
         this.generalClient.sendMessage("S " +pacY+ " "+ pacX);
-        if (!this.generalClient.response.contentEquals("empty")){
+        if (!this.generalClient.response.contentEquals("empty") && !this.generalClient.response.contentEquals("pacManAttack")){
             nodePanel node = fruitList.getElementByID(convertToId(pacX, pacY)); 
             if (node == null)
                 blockMatrix[pacY][pacX].setIcon(new ImageIcon("PACMAN\\src\\resources\\image-1.png"));
@@ -408,9 +411,20 @@ public class game {
                 node.element.setImage("PACMAN\\src\\resources\\image-1.png");
                 node.element.addLabel();
                 fruitList.deleteElement(node);
-                System.out.println("EE");
             }
             points = generalClient.response; 
+        }
+        else if(this.generalClient.response.contentEquals("pacManAttack")){
+            attackPos = false; 
+            nodePanel node = powerUpList.getElementByID(convertToId(pacX, pacY)); 
+            if (node == null)
+                blockMatrix[pacY][pacX].setIcon(new ImageIcon("PACMAN\\src\\resources\\image-1.png"));
+            else{
+                node.element.setImage("PACMAN\\src\\resources\\image-1.png");
+                node.element.addLabel();
+                powerUpList.deleteElement(node);
+            }
+            waitResponse();
         }
     }
 
@@ -470,6 +484,29 @@ public class game {
         timer.schedule(tarea, 1500);
    }
    
+    void powerUp(){
+        Timer timer = new Timer(15000, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                powerUpClient.sendMessage("q");
+                int powerID = Integer.parseInt(powerUpClient.response);
+                int coordX  = powerID%15; 
+                int coordY = powerID/15; 
+                object power = new powerUp(ground);
+                power.setImage();
+                power.addLabel();
+                power.move(coordX*24, coordY*24);
+                ground.setComponentZOrder(power.objectLabel, 1); 
+                powerUpList.insert(power, powerID);
+
+                System.out.println("ENTRAMOS"); 
+                
+            
+            }
+        });
+        timer.start();
+    }
+    
+  
    //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-//
     //--_-_-_-_-_Logique des cerises-_-_-_-_--_//
     //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-//
@@ -509,8 +546,8 @@ public class game {
         if(matrix[coordY][coordX] != 1){
             this.fruitClient.sendMessage("F " + coordY + " " + coordX);
             if (!this.fruitClient.response.contentEquals("empty")){
-               // blockMatrix[coordY][coordX].setIcon(new ImageIcon("PACMAN\\src\\resources\\image3.jpg"));
-                System.out.print(coordX%15+coordY*15);
+                blockMatrix[coordY][coordX].setIcon(new ImageIcon("PACMAN\\src\\resources\\image-1.jpg"));
+               
                 object fruit = new fruit(ground);
                 fruit.setImage();
                 fruit.addLabel();

@@ -614,6 +614,20 @@ void receiveMessage() {
                 response = "true"; // Copia la cadena "true" en response
             }
         }
+        else if (buffer[0] == 'q') {
+            //printf("%s\n", "Nueva fruta!!");
+            int posPower = randNumber(-1);
+            int pacX = convertX(posPower); 
+            int pacY = convertY(posPower); 
+            matrix[pacY][pacX] = 4;
+            char cadena[20];
+            sprintf(cadena, "%d", posPower);
+            response = cadena;
+            
+        }
+        
+        
+
         
         else if (buffer[0] == 'S'){
             int pacY = extractNumber(buffer, 1); 
@@ -632,6 +646,12 @@ void receiveMessage() {
                 char cadena[20];
                 sprintf(cadena, "%d", points);
                 response = cadena;
+            }
+            else if (matrix[pacY][pacX] == 4) {
+                matrix[pacY][pacX] = -1;
+                points += 0;
+                char cadena[20];
+                response = "pacManAttack";
             }
             else
                 response = "empty";

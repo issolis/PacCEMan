@@ -19,7 +19,7 @@ public class powerUp extends object{
     @Override
     public void setImage() {
         String path = ""; 
-        path = "PACMAN\\src\\resources\\ghost.png"; 
+        path = "PACMAN\\src\\resources\\image4.png"; 
         image = new ImageIcon(path);
         objectLabel.setIcon(image); 
     }
@@ -42,8 +42,9 @@ public class powerUp extends object{
 
     @Override
     public void setImage(String path) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setImage'");
+        image = new ImageIcon(path);
+        objectLabel.setIcon(image); 
+        objectLabel.repaint(); 
     }
     
 }
