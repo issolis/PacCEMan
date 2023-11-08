@@ -541,7 +541,19 @@ void receiveMessage() {
             else{
                 response = "true"; 
             }
+        } 
+        else if (buffer[0] == 'F') {
+            printf("%s\n", "Nueva fruta!!");
+            int pacY = extractNumber(buffer, 1);
+            int pacX = extractNumber(buffer, 2);
+            if (matrix[pacX][pacY] == 1)
+                response = "false"; // Copia la cadena "false" en response
+            else {
+                matrix[pacX][pacY] = 3;
+                response = "true"; // Copia la cadena "true" en response
+            }
         }
+        
         else if (buffer[0] == 'S'){
             int pacY = extractNumber(buffer, 1); 
             int pacX = extractNumber(buffer, 2); 
@@ -553,10 +565,17 @@ void receiveMessage() {
                 sprintf(cadena, "%d", points);
                 response = cadena; 
             }
+            else if( matrix[pacY][pacX] == 3){
+                    matrix[pacY][pacX] = -1; 
+                    points+=2000000;
+                    char cadena[20]; 
+                    sprintf(cadena, "%d", points);
+                    response = cadena; 
+            }
             else
                 response = "empty";
             
-        }
+        }              
         else if (buffer[0] == 'N'){
             restart(); 
             response = "REINICIO"; 
@@ -571,8 +590,8 @@ void receiveMessage() {
             else{
                 response = "false"; 
             }
-                
         }
+  
         send(clientSocket, response, strlen(response), 0);
         strcpy(route, ""); 
     }

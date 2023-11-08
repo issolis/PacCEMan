@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Random;
+
 import javax.swing.Timer;
 import clientSocket.client;
 import javax.swing.ImageIcon;
@@ -32,6 +34,7 @@ public class game {
     client moveClient = new client(12345);
     client pointsClient = new client(12345);
     client ghostOneClient = new client(12345);  
+    client fruitClient = new client(12345);
 
     JLabel pointsLb;
 
@@ -114,6 +117,7 @@ public class game {
         showPoints();
         move(); 
         moveGhostOne();
+        fruitGenerator();
 
         gamePanel.add(ground);
         window.add(gamePanel);
@@ -156,6 +160,15 @@ public class game {
             }
         });
         timer.start();
+    }
+
+    void fruitGenerator(){
+        Timer timer = new Timer(10000, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                generateFruit();
+            }
+        });
+        timer.start(); 
     }
 
     void move (){
@@ -305,6 +318,54 @@ public class game {
             }
         }
     }
+    
+    
+    //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-//
+    //--_-_-_-_-_Logique des cerises-_-_-_-_-//
+    //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-//
+
+    private void generateFruit(){
+        boolean posFoundF =  false;
+
+        System.out.println("A fruit will be generated !!");
+        while (posFoundF == false) {
+            int randomID = genRandNum(0, 224);
+            int xCoord = convertX(randomID);
+            int yCoord = convertY(randomID);
+            if(checkAvailablePos(yCoord, xCoord)){
+                posFoundF = true;
+            }
+        }
+    }
+
+    public int genRandNum(int min, int max) {
+        Random rand = new Random();
+        int randomID = rand.nextInt(max - min + 1) + min;
+        System.out.println("Rand num ! " + Integer.toString(randomID));
+        return randomID; 
+    }
+    private int convertY(int id){
+        int posY = id/15;
+        return posY;
+    }
+
+    private int convertX(int id){
+        int posX = (id%15);
+        return posX; 
+    }
+
+    private boolean checkAvailablePos(int coordX, int coordY){
+        if(matrix[coordY][coordX] != 1){
+            this.fruitClient.sendMessage("F " + coordY + " " + coordX);
+            if (!this.fruitClient.response.contentEquals("empty")){
+                blockMatrix[coordY][coordX].setIcon(new ImageIcon("PACMAN\\src\\resources\\image3.jpg"));
+                System.out.println("New fruit added in cords" + Integer.toString(coordY) + Integer.toString(coordX));
+                return true;
+            }
+        }
+        return false; 
+    }
+    
     //----------------------------------------//
     //----------------------------------------//
     ////////////////////////////////////////////
