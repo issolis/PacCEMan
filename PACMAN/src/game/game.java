@@ -25,6 +25,7 @@ public class game {
     JLabel blockMatrix[][];
     JLabel pacManJLabel; 
     int matrix[][]; 
+   
 
     boolean up    = false; 
     boolean down  = false; 
@@ -32,7 +33,7 @@ public class game {
     boolean right = false; 
 
     client moveClient = new client(12345);
-    client pointsClient = new client(12345);
+    client generalClient = new client(12345);
     client ghostOneClient = new client(12345);  
     client ghostTwoClient = new client(12345);  
     client ghostThreeClient = new client(12345);  
@@ -40,8 +41,10 @@ public class game {
     client fruitClient = new client(12345);
 
     JLabel pointsLb;
-
     String points = "0";
+
+    JLabel heartLb; 
+    JLabel lifesLb;
 
     object ghostOne = new ghost ("1", ground); 
     object ghostTwo = new ghost ("2", ground); 
@@ -70,6 +73,20 @@ public class game {
         ground.setBounds(39,35, 360,360);
         ground.setVisible(true);
         ground.setBackground(Color.BLACK);
+
+        heartLb = new JLabel(); 
+        heartLb.setIcon(new ImageIcon("PACMAN\\src\\resources\\heart (2).png")); 
+        heartLb.setBounds(40,5, 24, 21); 
+        heartLb.setVisible(true);
+        gamePanel.add(heartLb); 
+
+        lifesLb = new JLabel();
+        lifesLb.setBounds(width / 2 - 160, 3, 50, 24);
+        lifesLb.setText("0");
+        lifesLb.setVisible(true); 
+        gamePanel.add(lifesLb); 
+   
+
     //--------------------------------------//
     /////////////////////////////////////////
     ///////////////PAC MAN PLAYER////////////
@@ -117,6 +134,7 @@ public class game {
         
         Font font = new Font("Arial", Font.BOLD, 16); 
         pointsLb.setFont(font);
+        lifesLb.setFont(font); 
 
 
      //--------------------------------------//
@@ -139,10 +157,12 @@ public class game {
         
         direcction();
         showPoints();
+        showLife();
         move(); 
         moveGhostOne();
         moveGhostTwo();
         moveGhostThree();
+        moveGhostFour();
         fruitGenerator();
 
         gamePanel.add(ground);
@@ -178,6 +198,16 @@ public class game {
     ////////////////////////////////////////////
     ////////////Player functionalities/////////
     ///////////////////////////////////////////
+    
+    void showLife(){
+        Timer timer = new Timer(200, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                generalClient.sendMessage("o "+ points);
+                lifesLb.setText(generalClient.response);
+            }
+        });
+        timer.start();
+    }
     
     void showPoints(){
         Timer timer = new Timer(200, new ActionListener() {
@@ -326,10 +356,10 @@ public class game {
     }
     
     void checkPoints(int pacX, int pacY){
-        this.pointsClient.sendMessage("S " +pacY+ " "+ pacX);
-        if (!this.pointsClient.response.contentEquals("empty")){
+        this.generalClient.sendMessage("S " +pacY+ " "+ pacX);
+        if (!this.generalClient.response.contentEquals("empty")){
             blockMatrix[pacY][pacX].setIcon(new ImageIcon("PACMAN\\src\\resources\\image-1.png"));
-            points = pointsClient.response; 
+            points = generalClient.response; 
         }
     }
 
@@ -366,6 +396,7 @@ public class game {
         //System.out.println("Rand num ! " + Integer.toString(randomID));
         return randomID; 
     }
+    
     private int convertY(int id){
         int posY = id/15;
         return posY;
@@ -481,7 +512,7 @@ public class game {
 
     void moveGhostThree(){
 
-        Timer timer = new Timer(400, new ActionListener() {
+        Timer timer = new Timer(350, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Point ghostLocation = ghostThree.getLocation(); 
                 
@@ -500,16 +531,9 @@ public class game {
                     int pacManID = convertToId(pacX, pacY);
 
                     if (pacManID != ghostID){
-
-                        Random random = new Random();
-                        int numeroAleatorio = random.nextInt(225);
-                        int i = numeroAleatorio%15;
-                        int j = numeroAleatorio/15;
-
-                        
                         ghostThreeClient.sendMessage("p 3 "+ghostID+" "+pacManID);
                         ghostThreeRoute.convertStringToList(ghostThreeClient.response);
-                        System.out.println(ghostOneClient.response);
+                      
                     }
                 }else{
                     if(ghostThreeRoute.head!= null){
@@ -520,6 +544,48 @@ public class game {
                         System.out.println(newX+" "+ newY);
                         ghostThree.move(newX, newY);
                         ghostThreeRoute.head = ghostThreeRoute.head.next; 
+                    }
+                }
+            }
+        });
+        timer.start();
+
+    }
+
+     void moveGhostFour(){
+
+        Timer timer = new Timer(250, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Point ghostLocation = ghostFour.getLocation(); 
+                
+                int ghostX  = ghostLocation.x/24; 
+                int ghostY  = ghostLocation.y/24; 
+                int ghostID = convertToId(ghostX, ghostY); 
+                System.out.println(ghostID); 
+                ghostFourClient.sendMessage("H "+ghostID);
+                System.out.println(ghostFourClient.response); 
+                if (ghostFourClient.response.contentEquals("true")){
+                    Point pacManLocation = pacManJLabel.getLocation(); 
+
+                    int pacX = pacManLocation.x/24;
+                    int pacY = pacManLocation.y/24;
+                    
+                    int pacManID = convertToId(pacX, pacY);
+
+                    if (pacManID != ghostID){
+                        ghostFourClient.sendMessage("p 4 "+ghostID+" "+pacManID);
+                        ghostFourRoute.convertStringToList(ghostFourClient.response);
+                        System.out.println(ghostFourClient.response); 
+                    }
+                }else{
+                    if(ghostFourRoute.head!= null){
+                        int id = ghostFourRoute.head.id; 
+                        int newX = id%15*24; 
+                        int newY = id/15*24; 
+
+                        System.out.println(newX+" "+ newY);
+                        ghostFour.move(newX, newY);
+                        ghostFourRoute.head = ghostFourRoute.head.next; 
                     }
                 }
             }

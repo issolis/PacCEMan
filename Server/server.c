@@ -17,6 +17,10 @@ int ghostOneFP    = -1;
 int ghostTwoFP    = -1; 
 int ghostThreeFP  = -1; 
 int ghostFourFP = -1; 
+int lifes = 3;
+int lastPoints = 0;  
+
+int followedTimes = 0;
 
 int ended = -1; 
 
@@ -436,14 +440,16 @@ void restart(){
     ghostTwoFP   = -1; 
     ghostThreeFP = -1; 
     ghostFourFP  = -1; 
+    lifes = 3;
+    lastPoints = 0; 
 }
 
-int randNumber(){
+int randNumber(int id){
     int x = rand()%225; 
     int posX = convertX(x);
     int posY = convertY(x);
-    while (matrix[posY][posX]==1){
-        x = rand()%225;
+    while (matrix[posY][posX]==1 || x==id){
+        x = rand()%225;  
         posX = convertX(x);
         posY = convertY(x);
         
@@ -526,18 +532,24 @@ void receiveMessage() {
                 int delta = 5;
                 //printf("%i %i\n",abs(pacX - ghoX), abs(pacY - ghoY)); 
                 if (abs(pacX - ghoX)>delta || abs(pacY - ghoY)>delta){
-                    end = randNumber(); 
+                    end = randNumber(start); 
                     //printf("Entró \n");
                 }
                 ghostTwoFP   = end; 
                 
             }
             if(buffer[2]=='3'){ 
-                end =randNumber(); 
+                end =randNumber(start); 
                 ghostThreeFP = end;
             }
-            if(buffer[2]=='4')
-                ghostFourFP  = end; 
+            if(buffer[2]=='4'){
+                if(followedTimes%5!=0)
+                    end = randNumber(start);
+                ghostFourFP= end; 
+                followedTimes++; 
+
+            }
+               
             
             
             printf("%i %i \n", start, end); 
@@ -632,47 +644,61 @@ void receiveMessage() {
        
         else if (buffer[0] == 'g'){
             int posGO = extractNumber(buffer, 1); 
-           // printf("%i ", posGO); 
-           // printf("%i ", ghostOneFP);
-            if(ended == -1 || ended==1){
-               
-                if (posGO == ghostOneFP || ghostOneFP == -1){
-                    response = "true"; 
-                    
-                }
-                else{
-                    response = "false"; 
-                }
+            if (posGO == ghostOneFP || ghostOneFP == -1)
+                response = "true"; 
+            
+            else{
+                response = "false"; 
             }
+        
         }
         else if (buffer[0] == 'G'){
             int posGO = extractNumber(buffer, 1); 
-           // printf("%i ", posGO); 
-           // printf("%i ", ghostOneFP);
-            if(ended == -1 || ended==1){
-             
-                if (posGO == ghostTwoFP || ghostTwoFP == -1){
-                    response = "true"; 
-                }
-                else{
-                    response = "false"; 
-                }
+           if (posGO == ghostTwoFP || ghostTwoFP == -1){
+                response = "true"; 
             }
+            else{
+                response = "false"; 
+            }
+        
         }
         else if (buffer[0] == 'h'){
             int posGO = extractNumber(buffer, 1); 
-           // printf("%i ", posGO); 
-           // printf("%i ", ghostThreeFP);
-            if(ended == -1 || ended==1){
-                
-                if (posGO == ghostThreeFP || ghostThreeFP == -1){
-                    response = "true"; 
-                    ended = 0;
-                }
-                else{
-                    response = "false"; 
-                }
+            if (posGO == ghostThreeFP || ghostThreeFP == -1){
+                response = "true"; 
+                ended = 0;
             }
+            else{
+                response = "false"; 
+            }
+        
+        }
+        else if (buffer[0] == 'H'){
+            int posGO = extractNumber(buffer, 1); 
+            printf("%i", posGO);
+            printf("%i \n", ghostFourFP);
+            
+            if (posGO == ghostFourFP || ghostFourFP == -1){
+                response = "true"; 
+                ended = 0;
+            }
+            else{
+                response = "false"; 
+            }
+            
+            
+        }
+        
+        else if (buffer[0] == 'o'){
+            int points = extractNumber(buffer, 1); 
+            if (points-lastPoints>=10000){
+                char cadena[20]; 
+                lifes++; 
+                lastPoints = points; 
+            }
+            char cadena[20];
+            sprintf(cadena, "%d", lifes );
+            response = cadena; 
         }
         send(clientSocket, response, strlen(response), 0);
         strcpy(route, ""); 
