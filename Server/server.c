@@ -700,6 +700,24 @@ void receiveMessage() {
             sprintf(cadena, "%d", lifes );
             response = cadena; 
         }
+        
+        else if (buffer[0] == 'c'){
+            int pacID = extractNumber(buffer, 1);
+            int g1ID = extractNumber(buffer, 2);
+            int g2ID = extractNumber(buffer, 3);
+            int g3ID = extractNumber(buffer, 4);
+            int g4ID = extractNumber(buffer, 5);
+
+            if(pacID == g1ID || pacID == g2ID || pacID == g3ID ||pacID == g4ID ){
+                lifes--; 
+                if (lifes == 0){
+                    response = "killed";
+                }
+                else{
+                    response = "minusLife"; 
+                }
+            }
+        }
         send(clientSocket, response, strlen(response), 0);
         strcpy(route, ""); 
     }

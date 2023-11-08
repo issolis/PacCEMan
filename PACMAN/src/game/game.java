@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Random;
+import java.util.TimerTask;
 
 import javax.swing.Timer;
 import clientSocket.client;
@@ -20,6 +21,7 @@ import dataStructures.list;
 
 public class game {
     JPanel gamePanel; 
+    JPanel parent; 
     JPanel ground = new JPanel();  
     JFrame window;
     JLabel blockMatrix[][];
@@ -55,12 +57,17 @@ public class game {
     list ghostThreeRoute = new list();
     list ghostFourRoute = new list();
 
+    boolean againstPacMan = true;
+    boolean attackPos = true;
 
 
 
-    game(JFrame window, int width, int height){
+
+    game(JFrame window, JPanel parent, int width, int height){
     //---------General Configurations--------//
         this.window=window;
+        this.parent = parent; 
+
         gamePanel = new JPanel();     
         gamePanel.setLayout(null);
         gamePanel.setBounds(0,0, width, height);
@@ -163,6 +170,7 @@ public class game {
         moveGhostTwo();
         moveGhostThree();
         moveGhostFour();
+        checkCollision();
         fruitGenerator();
 
         gamePanel.add(ground);
@@ -213,6 +221,38 @@ public class game {
         Timer timer = new Timer(200, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 pointsLb.setText("Score :"+ points);
+            }
+        });
+        timer.start();
+    }
+
+    void checkCollision(){
+        Timer timer = new Timer(50, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (againstPacMan){
+                    if (attackPos){
+                        int g1ID = convertToId(ghostOne.getLocation().x/24, ghostOne.getLocation().y/24);
+                        int g2ID = convertToId(ghostTwo.getLocation().x/24, ghostTwo.getLocation().y/24);
+                        int g3ID = convertToId(ghostThree.getLocation().x/24, ghostThree.getLocation().y/24);
+                        int g4ID = convertToId(ghostFour.getLocation().x/24, ghostFour.getLocation().y/24);
+                        int pacManID = convertToId(pacManJLabel.getLocation().x/24,pacManJLabel.getLocation().y/24);
+
+                        generalClient.sendMessage("c "+ pacManID + " "+ g1ID + " "+ g2ID +" "+ g3ID + " "+ g4ID);
+
+                        if (generalClient.response.contains("killed")){
+                            gamePanel.setVisible(false);
+                            parent.setVisible(true);   
+                            window.remove(gamePanel);
+                        }
+                        else if (generalClient.response.contains("minusLife")){
+                            attackPos = false; 
+                            waitResponse();
+                        }
+                    }
+
+                }else{
+
+                }
             }
         });
         timer.start();
@@ -372,6 +412,18 @@ public class game {
         }
     }
     
+
+    void waitResponse(){
+        java.util.Timer timer = new java.util.Timer();
+
+        TimerTask tarea = new TimerTask() {
+            @Override
+            public void run() {
+              attackPos = true; 
+            }
+        };
+        timer.schedule(tarea, 5000);
+    }
     //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-//
     //--_-_-_-_-_Logique des cerises-_-_-_-_--_//
     //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-//
@@ -552,7 +604,7 @@ public class game {
 
     }
 
-     void moveGhostFour(){
+    void moveGhostFour(){
 
         Timer timer = new Timer(250, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
