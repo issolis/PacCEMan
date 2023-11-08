@@ -710,7 +710,7 @@ void receiveMessage() {
 
             if(pacID == g1ID || pacID == g2ID || pacID == g3ID ||pacID == g4ID ){
                 lifes--; 
-                if (lifes == 0){
+                if (lifes <= 0){
                     response = "killed";
                 }
                 else{

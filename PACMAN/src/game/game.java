@@ -240,9 +240,7 @@ public class game {
                         generalClient.sendMessage("c "+ pacManID + " "+ g1ID + " "+ g2ID +" "+ g3ID + " "+ g4ID);
 
                         if (generalClient.response.contains("killed")){
-                            gamePanel.setVisible(false);
-                            parent.setVisible(true);   
-                            window.remove(gamePanel);
+                            lose();
                         }
                         else if (generalClient.response.contains("minusLife")){
                             attackPos = false; 
@@ -412,7 +410,6 @@ public class game {
         }
     }
     
-
     void waitResponse(){
         java.util.Timer timer = new java.util.Timer();
 
@@ -424,7 +421,22 @@ public class game {
         };
         timer.schedule(tarea, 5000);
     }
-    //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-//
+   
+    void lose(){
+    java.util.Timer timer = new java.util.Timer();
+
+        TimerTask tarea = new TimerTask() {
+            @Override
+            public void run() {
+                gamePanel.setVisible(false);
+                parent.setVisible(true);   
+                window.remove(gamePanel); 
+            }
+        };
+        timer.schedule(tarea, 1500);
+   }
+   
+   //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-//
     //--_-_-_-_-_Logique des cerises-_-_-_-_--_//
     //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-//
 
