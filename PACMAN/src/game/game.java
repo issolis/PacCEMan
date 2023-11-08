@@ -14,10 +14,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import ghost.*;
+import dataStructures.list;
 
 public class game {
     JPanel gamePanel; 
-    JPanel ground; 
+    JPanel ground = new JPanel();  
     JFrame window;
     JLabel blockMatrix[][];
     JLabel pacManJLabel; 
@@ -36,7 +37,9 @@ public class game {
 
     String points = "0";
 
-    object ghostOne; 
+    object ghostOne = new ghost ("1", ground); 
+    list ghostOneRoute = new list();
+
 
 
     game(JFrame window, int width, int height){
@@ -49,7 +52,7 @@ public class game {
         gamePanel.setBackground(Color.BLUE);
    
     
-        ground = new JPanel(); 
+        
         ground.setLayout(null);
         ground.setBounds(39,35, 360,360);
         ground.setVisible(true);
@@ -72,7 +75,7 @@ public class game {
     /////////////////////////////////////////
     //--------------------------------------//
 
-        ghostOne = new ghost ("1", ground); 
+        
         ghostOne.setImage();
         ghostOne.addLabel();
         ghostOne.move(336, 336);
@@ -313,7 +316,7 @@ public class game {
     }
 
     void moveGhostOne(){
-        Timer timer = new Timer(1000, new ActionListener() {
+        Timer timer = new Timer(300, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Point ghostLocation = ghostOne.getLocation(); 
                 
@@ -328,7 +331,21 @@ public class game {
                     int pacY = pacManLocation.y/24; 
                     int pacManID = convertToId(pacX, pacY); 
                     ghostOneClient.sendMessage("p "+ghostID+" "+pacManID);
+
+                    ghostOneRoute.convertStringToList(ghostOneClient.response);
+                    ghostOneRoute.show();
+
                     System.out.println(ghostOneClient.response);
+                }else{
+                    if(ghostOneRoute.head!= null){
+                        int id = ghostOneRoute.head.id; 
+                        int newX = id%15*24; 
+                        int newY = id/15*24; 
+
+                        System.out.println(newX+" "+ newY);
+                        ghostOne.move(newX, newY);
+                        ghostOneRoute.head = ghostOneRoute.head.next; 
+                    }
                 }
             }
         });

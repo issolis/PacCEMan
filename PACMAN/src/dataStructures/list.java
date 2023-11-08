@@ -1,7 +1,7 @@
 package dataStructures;
 
 public class list {
-    node head; 
+    public node head; 
     public list(){
         head = null; 
     }
@@ -27,10 +27,6 @@ public class list {
                 insertElement(Integer.parseInt(str.substring(pos, i)));
                 pos = i +1; 
             }
-            if (i == len -1){
-                 insertElement(Integer.parseInt(str.substring(pos, i+1)));
-            }
-
         }
     }
     public void deleteFirst (){

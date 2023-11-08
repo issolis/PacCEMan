@@ -24,4 +24,8 @@ public abstract class object {
     public abstract void addLabel(); 
     public abstract Point getLocation(); 
     public abstract void deleteObject();
+
+    public Object getRoute() {
+        return null;
+    }
 }

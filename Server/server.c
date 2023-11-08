@@ -425,6 +425,7 @@ void restart(){
             }
         }
     points = 0; 
+    ghostOneFP = -1; 
 }
 
 
@@ -490,6 +491,11 @@ void receiveMessage() {
             
             int raw = 15;
             int colum = 15;
+
+
+            ghostOneFP = end;  
+            
+            
             printf("%i %i", start, end); 
             constructor(); 
             madeMatrix(raw, colum);
@@ -561,6 +567,9 @@ void receiveMessage() {
 
             if (posGO == ghostOneFP || ghostOneFP == -1)
                 response = "true"; 
+            else{
+                response = "false"; 
+            }
                 
         }
         send(clientSocket, response, strlen(response), 0);
