@@ -488,7 +488,6 @@ void receiveMessage() {
         if (buffer[0]=='p'){
             int start = extractNumber(buffer, 1); 
             int end = extractNumber(buffer, 2);
-            
             int raw = 15;
             int colum = 15;
 

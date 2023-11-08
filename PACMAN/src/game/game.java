@@ -332,12 +332,11 @@ public class game {
                     int pacY = pacManLocation.y/24;
                     int pacManID = convertToId(pacX, pacY);
 
-                     
-                    ghostOneClient.sendMessage("p "+ghostID+" "+pacManID);
-
-                    ghostOneRoute.convertStringToList(ghostOneClient.response);
-
-                    System.out.println(ghostOneClient.response);
+                    if (pacManID != ghostID){
+                        ghostOneClient.sendMessage("p "+ghostID+" "+pacManID);
+                        ghostOneRoute.convertStringToList(ghostOneClient.response);
+                        System.out.println(ghostOneClient.response);
+                    }
                 }else{
                     if(ghostOneRoute.head!= null){
                         int id = ghostOneRoute.head.id; 
