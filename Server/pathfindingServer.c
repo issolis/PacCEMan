@@ -8,8 +8,6 @@
 #include <string.h>
 #include <WinSock2.h>
 #pragma comment(lib, "ws2_32.lib")
-
-int points=0; 
 SOCKET serverSocket;
 
 int ghostOneFP = -1; 
@@ -227,14 +225,11 @@ void printMatrix() {
         currentRow=currentRow->down; 
         while(auxiliar!=NULL){
             struct node *temp = auxiliar;
-            printf("%i ", auxiliar->id);
             auxiliar=auxiliar->right; 
-            free(temp); 
         }
         printf("\n");
     }    
     head=NULL;
-    free(head); 
 }
 
 int convertX(int id){
@@ -500,6 +495,13 @@ void receiveMessage() {
 
             response = route; 
         }
+        else if (buffer[0] == '1'){
+            int posGO = extractNumber(buffer, 1); 
+
+            if (posGO == ghostOneFP || ghostOneFP == -1)
+                response = "true"; 
+                
+        }
         
         send(clientSocket, response, strlen(response), 0);
         strcpy(route, ""); 
@@ -509,7 +511,7 @@ void receiveMessage() {
 }
 
 int main() {
-    if (initServer(12345) != 0) {
+    if (initServer(8888) != 0) {
         return 1;
     }
 

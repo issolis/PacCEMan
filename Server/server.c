@@ -229,12 +229,12 @@ void printMatrix() {
             struct node *temp = auxiliar;
             printf("%i ", auxiliar->id);
             auxiliar=auxiliar->right; 
-            free(temp); 
+            
         }
         printf("\n");
     }    
     head=NULL;
-    free(head); 
+
 }
 
 int convertX(int id){

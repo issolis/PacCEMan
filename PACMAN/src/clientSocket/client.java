@@ -4,15 +4,15 @@ import java.io.*;
 import java.net.*;
 
 public class client {
-
+    int serverPort;
     public String response; 
-    public client(){
+    public client(int serverPort){
         response = ""; 
+        this.serverPort = serverPort;
     }
 
     public void sendMessage(String message){
         String serverAddress = "127.0.0.1";
-        int serverPort = 12345; 
         
         try (Socket socket = new Socket(serverAddress, serverPort);
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);

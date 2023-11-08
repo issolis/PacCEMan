@@ -28,9 +28,9 @@ public class game {
     boolean left  = false;
     boolean right = false; 
 
-    client moveClient = new client();
-    client pointsClient = new client();
-    client ghostOneClient = new client();  
+    client moveClient = new client(12345);
+    client pointsClient = new client(12345);
+    client ghostOneClient = new client(12345);  
 
     JLabel pointsLb;
 
@@ -313,7 +313,7 @@ public class game {
     }
 
     void moveGhostOne(){
-        Timer timer = new Timer(5000, new ActionListener() {
+        Timer timer = new Timer(1000, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Point ghostLocation = ghostOne.getLocation(); 
                 
