@@ -547,10 +547,10 @@ void receiveMessage() {
             printf("%s\n", "Nueva fruta!!");
             int pacY = extractNumber(buffer, 1);
             int pacX = extractNumber(buffer, 2);
-            if (matrix[pacX][pacY] == 1)
+            if (matrix[pacY][pacX] == 1)
                 response = "false"; // Copia la cadena "false" en response
             else {
-                matrix[pacX][pacY] = 3;
+                matrix[pacY][pacX] = 3;
                 response = "true"; // Copia la cadena "true" en response
             }
         }
@@ -568,7 +568,7 @@ void receiveMessage() {
             }
             else if (matrix[pacY][pacX] == 3) {
                 matrix[pacY][pacX] = -1;
-                points += 2000000;
+                points += 1000;
                 char cadena[20];
                 sprintf(cadena, "%d", points);
                 response = cadena;

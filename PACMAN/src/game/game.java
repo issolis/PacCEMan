@@ -87,7 +87,7 @@ public class game {
     
 
         pointsLb = new JLabel("Score: 0");
-        pointsLb.setBounds(width / 2 - 30, 0, 100, 24);
+        pointsLb.setBounds(width / 2 - 30, 0, 250, 24);
         pointsLb.setVisible(true);
         gamePanel.add(pointsLb);
         
@@ -117,7 +117,7 @@ public class game {
         showPoints();
         move(); 
         moveGhostOne();
-        //fruitGenerator();
+        fruitGenerator();
 
         gamePanel.add(ground);
         window.add(gamePanel);
