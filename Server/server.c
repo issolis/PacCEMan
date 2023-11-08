@@ -7,12 +7,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <WinSock2.h>
+#include <time.h>
 #pragma comment(lib, "ws2_32.lib")
 
 int points=0; 
 SOCKET serverSocket;
 
-int ghostOneFP = -1; 
+int ghostOneFP    = -1; 
+int ghostTwoFP    = -1; 
+int ghostThreeFP  = -1; 
+int ghostFourFP = -1; 
+
+int ended = -1; 
 
 int matrix[15][15] = {
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -155,7 +161,7 @@ bool member (struct nodeList *listHead, struct node *node){
 void showIdList (){
     struct nodeId *current = IdHead; 
     while (current!=NULL){
-        printf("%i ", current->id); 
+        //printf("%i ", current->id); 
         sprintf(route + strlen(route), "%i ", current->id);
         current = current->next;
     }
@@ -227,11 +233,11 @@ void printMatrix() {
         currentRow=currentRow->down; 
         while(auxiliar!=NULL){
             struct node *temp = auxiliar;
-            printf("%i ", auxiliar->id);
+            //printf("%i ", auxiliar->id);
             auxiliar=auxiliar->right; 
             
         }
-        printf("\n");
+        //printf("\n");
     }    
     head=NULL;
 
@@ -426,9 +432,24 @@ void restart(){
             }
         }
     points = 0; 
-    ghostOneFP = -1; 
+    ghostOneFP   = -1; 
+    ghostTwoFP   = -1; 
+    ghostThreeFP = -1; 
+    ghostFourFP  = -1; 
 }
 
+int randNumber(){
+    int x = rand()%225; 
+    int posX = convertX(x);
+    int posY = convertY(x);
+    while (matrix[posY][posX]==1){
+        x = rand()%225;
+        posX = convertX(x);
+        posY = convertY(x);
+        
+    }
+    return x;  
+}
 
 int initServer(int serverPort) {
     WSADATA wsaData;
@@ -487,24 +508,50 @@ void receiveMessage() {
         //printf("Mensaje del cliente: %s\n", buffer);
         const char* response = "RECIBIDO";
         if (buffer[0]=='p'){
-            int start = extractNumber(buffer, 1); 
-            int end = extractNumber(buffer, 2);
+            ended = 0;
+            int start = extractNumber(buffer, 2); 
+            int end = extractNumber(buffer, 3);
             int raw = 15;
             int colum = 15;
 
+            if(buffer[2]=='1')
+                ghostOneFP   = end;  
+            if(buffer[2]=='2'){
 
-            ghostOneFP = end;  
+                int pacX = convertX(end); 
+                int pacY = convertY(end); 
+                int ghoX = convertX(start); 
+                int ghoY = convertY(start); 
+
+                int delta = 5;
+                //printf("%i %i\n",abs(pacX - ghoX), abs(pacY - ghoY)); 
+                if (abs(pacX - ghoX)>delta || abs(pacY - ghoY)>delta){
+                    end = randNumber(); 
+                    //printf("Entró \n");
+                }
+                ghostTwoFP   = end; 
+                
+            }
+            if(buffer[2]=='3'){ 
+                end =randNumber(); 
+                ghostThreeFP = end;
+            }
+            if(buffer[2]=='4')
+                ghostFourFP  = end; 
             
             
-            printf("%i %i", start, end); 
+            printf("%i %i \n", start, end); 
             constructor(); 
             madeMatrix(raw, colum);
             blockNodes(); 
             pathfinding(start, end); 
             printMatrix(); 
+            
 
 
             response = route; 
+
+            ended = 1; 
         }
         else if (buffer[0] == 'R'){
             int pacY = extractNumber(buffer, 1); 
@@ -543,8 +590,9 @@ void receiveMessage() {
                 response = "true"; 
             }
         } 
+        
         else if (buffer[0] == 'F') {
-            printf("%s\n", "Nueva fruta!!");
+            //printf("%s\n", "Nueva fruta!!");
             int pacY = extractNumber(buffer, 1);
             int pacX = extractNumber(buffer, 2);
             if (matrix[pacY][pacX] == 1)
@@ -581,18 +629,51 @@ void receiveMessage() {
             restart(); 
             response = "REINICIO"; 
         }
+       
         else if (buffer[0] == 'g'){
             int posGO = extractNumber(buffer, 1); 
-            printf("%i ", posGO); 
-            printf("%i ", ghostOneFP);
-
-            if (posGO == ghostOneFP || ghostOneFP == -1)
-                response = "true"; 
-            else{
-                response = "false"; 
+           // printf("%i ", posGO); 
+           // printf("%i ", ghostOneFP);
+            if(ended == -1 || ended==1){
+               
+                if (posGO == ghostOneFP || ghostOneFP == -1){
+                    response = "true"; 
+                    
+                }
+                else{
+                    response = "false"; 
+                }
             }
         }
-  
+        else if (buffer[0] == 'G'){
+            int posGO = extractNumber(buffer, 1); 
+           // printf("%i ", posGO); 
+           // printf("%i ", ghostOneFP);
+            if(ended == -1 || ended==1){
+             
+                if (posGO == ghostTwoFP || ghostTwoFP == -1){
+                    response = "true"; 
+                }
+                else{
+                    response = "false"; 
+                }
+            }
+        }
+        else if (buffer[0] == 'h'){
+            int posGO = extractNumber(buffer, 1); 
+           // printf("%i ", posGO); 
+           // printf("%i ", ghostThreeFP);
+            if(ended == -1 || ended==1){
+                
+                if (posGO == ghostThreeFP || ghostThreeFP == -1){
+                    response = "true"; 
+                    ended = 0;
+                }
+                else{
+                    response = "false"; 
+                }
+            }
+        }
         send(clientSocket, response, strlen(response), 0);
         strcpy(route, ""); 
     }

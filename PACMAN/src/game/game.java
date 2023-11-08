@@ -34,6 +34,9 @@ public class game {
     client moveClient = new client(12345);
     client pointsClient = new client(12345);
     client ghostOneClient = new client(12345);  
+    client ghostTwoClient = new client(12345);  
+    client ghostThreeClient = new client(12345);  
+    client ghostFourClient = new client(12345); 
     client fruitClient = new client(12345);
 
     JLabel pointsLb;
@@ -41,7 +44,14 @@ public class game {
     String points = "0";
 
     object ghostOne = new ghost ("1", ground); 
+    object ghostTwo = new ghost ("2", ground); 
+    object ghostThree = new ghost ("3", ground); 
+    object ghostFour = new ghost ("4", ground); 
     list ghostOneRoute = new list();
+    list ghostTwoRoute = new list();
+    list ghostThreeRoute = new list();
+    list ghostFourRoute = new list();
+
 
 
 
@@ -83,6 +93,20 @@ public class game {
         ghostOne.addLabel();
         ghostOne.move(336, 336);
 
+        ghostTwo.setImage();
+        ghostTwo.addLabel();
+        ghostTwo.move(312, 336);
+
+        ghostThree.setImage();
+        ghostThree.addLabel();
+        ghostThree.move(288, 336);
+
+        ghostFour.setImage();
+        ghostFour.addLabel();
+        ghostFour.move(264, 336);
+
+        
+
     //-------------Score Label-----------------//
     
 
@@ -117,6 +141,8 @@ public class game {
         showPoints();
         move(); 
         moveGhostOne();
+        moveGhostTwo();
+        moveGhostThree();
         fruitGenerator();
 
         gamePanel.add(ground);
@@ -244,7 +270,6 @@ public class game {
             }
             
             if(e.getKeyCode() == KeyEvent.VK_D){
-                System.out.println("Derecha");
                 up    = false; 
                 down  = false; 
                 left  = false; 
@@ -252,7 +277,7 @@ public class game {
             }
             
             if(e.getKeyCode() == KeyEvent.VK_A){
-                System.out.println("Izqueirda");
+                
                 up    = false; 
                 down  = false; 
                 left  = true; 
@@ -317,15 +342,14 @@ public class game {
         }
     }
     
-    
     //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-//
-    //--_-_-_-_-_Logique des cerises-_-_-_-_-//
+    //--_-_-_-_-_Logique des cerises-_-_-_-_--_//
     //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-//
 
     private void generateFruit(){
         boolean posFoundF =  false;
 
-        System.out.println("A fruit will be generated !!");
+        //System.out.println("A fruit will be generated !!");
         while (posFoundF == false) {
             int randomID = genRandNum(0, 224);
             int xCoord = convertX(randomID);
@@ -339,7 +363,7 @@ public class game {
     public int genRandNum(int min, int max) {
         Random rand = new Random();
         int randomID = rand.nextInt(max - min + 1) + min;
-        System.out.println("Rand num ! " + Integer.toString(randomID));
+        //System.out.println("Rand num ! " + Integer.toString(randomID));
         return randomID; 
     }
     private int convertY(int id){
@@ -357,7 +381,7 @@ public class game {
             this.fruitClient.sendMessage("F " + coordY + " " + coordX);
             if (!this.fruitClient.response.contentEquals("empty")){
                 blockMatrix[coordY][coordX].setIcon(new ImageIcon("PACMAN\\src\\resources\\image3.jpg"));
-                System.out.println("New fruit added in cords" + Integer.toString(coordY) + Integer.toString(coordX));
+                //System.out.println("New fruit added in cords" + Integer.toString(coordY) + Integer.toString(coordX));
                 return true;
             }
         }
@@ -382,7 +406,7 @@ public class game {
                 int ghostX  = ghostLocation.x/24; 
                 int ghostY  = ghostLocation.y/24; 
                 int ghostID = convertToId(ghostX, ghostY); 
-                System.out.println(ghostID); 
+                //System.out.println(ghostID); 
                 ghostOneClient.sendMessage("g "+ghostID);
                 if (ghostOneClient.response.contentEquals("true")){
                     Point pacManLocation = pacManJLabel.getLocation(); 
@@ -393,9 +417,9 @@ public class game {
 
                     if (pacManID != ghostID){
 
-                        ghostOneClient.sendMessage("p "+ghostID+" "+pacManID);
+                        ghostOneClient.sendMessage("p 1 "+ghostID+" "+pacManID);
                         ghostOneRoute.convertStringToList(ghostOneClient.response);
-                        System.out.println(ghostOneClient.response);
+                        //System.out.println(ghostOneClient.response);
                     }
                 }else{
                     if(ghostOneRoute.head!= null){
@@ -403,7 +427,7 @@ public class game {
                         int newX = id%15*24; 
                         int newY = id/15*24; 
 
-                        System.out.println(newX+" "+ newY);
+                        //System.out.println(newX+" "+ newY);
                         ghostOne.move(newX, newY);
                         ghostOneRoute.head = ghostOneRoute.head.next; 
                     }
@@ -411,5 +435,96 @@ public class game {
             }
         });
         timer.start();
+    }
+
+    void moveGhostTwo(){
+
+        Timer timer = new Timer(350, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Point ghostLocation = ghostTwo.getLocation(); 
+                
+                int ghostX  = ghostLocation.x/24; 
+                int ghostY  = ghostLocation.y/24; 
+                int ghostID = convertToId(ghostX, ghostY); 
+                //System.out.println(ghostID); 
+                ghostTwoClient.sendMessage("G "+ghostID);
+                if (ghostTwoClient.response.contentEquals("true")){
+                    Point pacManLocation = pacManJLabel.getLocation(); 
+
+                    int pacX = pacManLocation.x/24;
+                    int pacY = pacManLocation.y/24;
+                    
+                    int pacManID = convertToId(pacX, pacY);
+
+                    if (pacManID != ghostID){
+
+                        ghostTwoClient.sendMessage("p 2 "+ghostID+" "+pacManID);
+                        ghostTwoRoute.convertStringToList(ghostTwoClient.response);
+                        //System.out.println(ghostOneClient.response);
+                    }
+                }else{
+                    if(ghostTwoRoute.head!= null){
+                        int id = ghostTwoRoute.head.id; 
+                        int newX = id%15*24; 
+                        int newY = id/15*24; 
+
+                        //System.out.println(newX+" "+ newY);
+                        ghostTwo.move(newX, newY);
+                        ghostTwoRoute.head = ghostTwoRoute.head.next; 
+                    }
+                }
+            }
+        });
+        timer.start();
+
+    }
+
+    void moveGhostThree(){
+
+        Timer timer = new Timer(400, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Point ghostLocation = ghostThree.getLocation(); 
+                
+                int ghostX  = ghostLocation.x/24; 
+                int ghostY  = ghostLocation.y/24; 
+                int ghostID = convertToId(ghostX, ghostY); 
+                System.out.println(ghostID); 
+                ghostThreeClient.sendMessage("h "+ghostID);
+                System.out.println(ghostID); 
+                if (ghostThreeClient.response.contentEquals("true")){
+                    Point pacManLocation = pacManJLabel.getLocation(); 
+
+                    int pacX = pacManLocation.x/24;
+                    int pacY = pacManLocation.y/24;
+                    
+                    int pacManID = convertToId(pacX, pacY);
+
+                    if (pacManID != ghostID){
+
+                        Random random = new Random();
+                        int numeroAleatorio = random.nextInt(225);
+                        int i = numeroAleatorio%15;
+                        int j = numeroAleatorio/15;
+
+                        
+                        ghostThreeClient.sendMessage("p 3 "+ghostID+" "+pacManID);
+                        ghostThreeRoute.convertStringToList(ghostThreeClient.response);
+                        System.out.println(ghostOneClient.response);
+                    }
+                }else{
+                    if(ghostThreeRoute.head!= null){
+                        int id = ghostThreeRoute.head.id; 
+                        int newX = id%15*24; 
+                        int newY = id/15*24; 
+
+                        System.out.println(newX+" "+ newY);
+                        ghostThree.move(newX, newY);
+                        ghostThreeRoute.head = ghostThreeRoute.head.next; 
+                    }
+                }
+            }
+        });
+        timer.start();
+
     }
 }

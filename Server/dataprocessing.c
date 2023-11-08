@@ -31,3 +31,4 @@ int extractNumber(const char *str, int pos) {
 
     return number;
 }
+

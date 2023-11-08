@@ -399,7 +399,7 @@ int main() {
     constructor(); 
     madeMatrix(raw, colum);
     blockNodes(); 
-    pathfinding(54, 67); 
+    pathfinding(195, 178); 
 
     
     printMatrix(); 

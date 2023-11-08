@@ -19,17 +19,7 @@ public class ghost extends object {
     @Override
     public void setImage() {
         String path = ""; 
-
-        if (type.contentEquals("1"))
-            path = "PACMAN\\src\\resources\\ghost1.png";
-        else if (type.contentEquals("1"))
-            path = "PACMAN\\src\\resources\\ghost2.png"; 
-        else if (type.contentEquals("1"))
-            path = "PACMAN\\src\\resources\\ghost3.png"; 
-        else if (type.contentEquals("1"))
-            path = "PACMAN\\src\\resources\\ghost4.png"; 
-
-
+        path = "PACMAN\\src\\resources\\ghost"+type+".png"; 
         image = new ImageIcon(path);
         objectLabel.setIcon(image); 
     }
