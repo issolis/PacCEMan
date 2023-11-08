@@ -39,5 +39,11 @@ public class powerUp extends object{
     public void deleteObject() {
         objectLabel.setVisible(false);
     }
+
+    @Override
+    public void setImage(String path) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setImage'");
+    }
     
 }

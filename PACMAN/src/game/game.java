@@ -18,6 +18,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import ghost.*;
 import dataStructures.list;
+import dataStructures.listPanel;
+import dataStructures.nodePanel;
 
 public class game {
     JPanel gamePanel; 
@@ -52,10 +54,13 @@ public class game {
     object ghostTwo = new ghost ("2", ground); 
     object ghostThree = new ghost ("3", ground); 
     object ghostFour = new ghost ("4", ground); 
+
     list ghostOneRoute = new list();
     list ghostTwoRoute = new list();
     list ghostThreeRoute = new list();
     list ghostFourRoute = new list();
+
+    listPanel fruitList = new listPanel(); 
 
     boolean againstPacMan = true;
     boolean attackPos = true;
@@ -396,7 +401,15 @@ public class game {
     void checkPoints(int pacX, int pacY){
         this.generalClient.sendMessage("S " +pacY+ " "+ pacX);
         if (!this.generalClient.response.contentEquals("empty")){
-            blockMatrix[pacY][pacX].setIcon(new ImageIcon("PACMAN\\src\\resources\\image-1.png"));
+            nodePanel node = fruitList.getElementByID(convertToId(pacX, pacY)); 
+            if (node == null)
+                blockMatrix[pacY][pacX].setIcon(new ImageIcon("PACMAN\\src\\resources\\image-1.png"));
+            else{
+                node.element.setImage("PACMAN\\src\\resources\\image-1.png");
+                node.element.addLabel();
+                fruitList.deleteElement(node);
+                System.out.println("EE");
+            }
             points = generalClient.response; 
         }
     }
@@ -496,7 +509,15 @@ public class game {
         if(matrix[coordY][coordX] != 1){
             this.fruitClient.sendMessage("F " + coordY + " " + coordX);
             if (!this.fruitClient.response.contentEquals("empty")){
-                blockMatrix[coordY][coordX].setIcon(new ImageIcon("PACMAN\\src\\resources\\image3.jpg"));
+               // blockMatrix[coordY][coordX].setIcon(new ImageIcon("PACMAN\\src\\resources\\image3.jpg"));
+                System.out.print(coordX%15+coordY*15);
+                object fruit = new fruit(ground);
+                fruit.setImage();
+                fruit.addLabel();
+                fruit.move(coordX*24, coordY*24);
+                ground.setComponentZOrder(fruit.objectLabel, 0); 
+                fruitList.insert(fruit, coordX%15+coordY*15);
+
                 //System.out.println("New fruit added in cords" + Integer.toString(coordY) + Integer.toString(coordX));
                 return true;
             }
@@ -604,9 +625,7 @@ public class game {
                 int ghostX  = ghostLocation.x/24; 
                 int ghostY  = ghostLocation.y/24; 
                 int ghostID = convertToId(ghostX, ghostY); 
-                System.out.println(ghostID); 
                 ghostThreeClient.sendMessage("h "+ghostID);
-                System.out.println(ghostID); 
                 if (ghostThreeClient.response.contentEquals("true")){
                     Point pacManLocation = pacManJLabel.getLocation(); 
 
@@ -626,7 +645,7 @@ public class game {
                         int newX = id%15*24; 
                         int newY = id/15*24; 
 
-                        System.out.println(newX+" "+ newY);
+                       // System.out.println(newX+" "+ newY);
                         ghostThree.move(newX, newY);
                         ghostThreeRoute.head = ghostThreeRoute.head.next; 
                     }
@@ -645,10 +664,8 @@ public class game {
                 
                 int ghostX  = ghostLocation.x/24; 
                 int ghostY  = ghostLocation.y/24; 
-                int ghostID = convertToId(ghostX, ghostY); 
-                System.out.println(ghostID); 
+                int ghostID = convertToId(ghostX, ghostY);
                 ghostFourClient.sendMessage("H "+ghostID);
-                System.out.println(ghostFourClient.response); 
                 if (ghostFourClient.response.contentEquals("true")){
                     Point pacManLocation = pacManJLabel.getLocation(); 
 
@@ -660,7 +677,6 @@ public class game {
                     if (pacManID != ghostID){
                         ghostFourClient.sendMessage("p 4 "+ghostID+" "+pacManID);
                         ghostFourRoute.convertStringToList(ghostFourClient.response);
-                        System.out.println(ghostFourClient.response); 
                     }
                 }else{
                     if(ghostFourRoute.head!= null){
@@ -668,7 +684,7 @@ public class game {
                         int newX = id%15*24; 
                         int newY = id/15*24; 
 
-                        System.out.println(newX+" "+ newY);
+                        //System.out.println(newX+" "+ newY);
                         ghostFour.move(newX, newY);
                         ghostFourRoute.head = ghostFourRoute.head.next; 
                     }

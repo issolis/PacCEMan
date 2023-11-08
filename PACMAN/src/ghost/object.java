@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 public abstract class object {
 
     JPanel parent; 
-    JLabel objectLabel; 
+    public JLabel objectLabel; 
     ImageIcon image; 
     String type; 
 
@@ -19,7 +19,8 @@ public abstract class object {
     } 
 
     public abstract void move(int xPos, int yPos); 
-    public abstract void setImage(); 
+    public abstract void setImage();
+     public abstract void setImage(String path); 
     public abstract void addLabel(); 
     public abstract Point getLocation(); 
     public abstract void deleteObject();

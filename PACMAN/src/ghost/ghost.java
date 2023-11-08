@@ -23,6 +23,7 @@ public class ghost extends object {
         path = "PACMAN\\src\\resources\\ghost"+type+".png"; 
         image = new ImageIcon(path);
         objectLabel.setIcon(image); 
+        objectLabel.repaint();
     }
 
     @Override
@@ -39,6 +40,11 @@ public class ghost extends object {
     @Override
     public void deleteObject() {
         objectLabel.setVisible(false);
+    }
+    @Override
+    public void setImage(String path) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setImage'");
     }
     
 }

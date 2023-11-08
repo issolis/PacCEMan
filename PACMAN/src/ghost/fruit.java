@@ -23,6 +23,12 @@ public class fruit extends object {
         image = new ImageIcon(path);
         objectLabel.setIcon(image); 
     }
+    @Override
+    public void setImage(String path) {
+        image = new ImageIcon(path);
+        objectLabel.setIcon(image); 
+        objectLabel.repaint(); 
+    }
 
     @Override
     public void addLabel() {
