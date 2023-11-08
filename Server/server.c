@@ -114,7 +114,7 @@ void addNodeOpenList ( struct node *node){
     struct nodeList *newNode = (struct nodeList *)malloc(sizeof(struct nodeList));
     newNode->next=NULL; 
     newNode->node=node;     
-    if (openListHead->node==NULL){
+    if (openListHead == NULL || openListHead->node==NULL){
         openListHead  = newNode; 
     }
     else{
@@ -290,6 +290,7 @@ void pathfinding(int inicialNodeId, int finalNodeId){
     struct node *finalNode = getNodeById(finalNodeId);
     addNodeCloseList(minNode);  
     minNode->f = minNode->h; 
+    minNode->parent = NULL; 
     
     while (true){
 
@@ -565,13 +566,13 @@ void receiveMessage() {
                 sprintf(cadena, "%d", points);
                 response = cadena; 
             }
-            else if( matrix[pacY][pacX] == 3){
-                    matrix[pacY][pacX] = -1; 
-                    points+=2000000;
-                    char cadena[20]; 
-                    sprintf(cadena, "%d", points);
-                    response = cadena; 
-            }
+            else if (matrix[pacY][pacX] == 3) {
+                matrix[pacY][pacX] = -1;
+                points += 2000000;
+                char cadena[20];
+                sprintf(cadena, "%d", points);
+                response = cadena;
+            }
             else
                 response = "empty";
             

@@ -117,7 +117,7 @@ public class game {
         showPoints();
         move(); 
         moveGhostOne();
-        fruitGenerator();
+        //fruitGenerator();
 
         gamePanel.add(ground);
         window.add(gamePanel);
@@ -230,7 +230,6 @@ public class game {
         @Override
         public void keyPressed(KeyEvent e) {
             if(e.getKeyCode() == KeyEvent.VK_W){
-                System.out.println("Arriba");
                 up    = true; 
                 down  = false; 
                 left  = false; 
@@ -238,7 +237,6 @@ public class game {
             }
             
             if(e.getKeyCode() == KeyEvent.VK_S){
-                System.out.println("Abajo");
                 up    = false; 
                 down  = true; 
                 left  = false; 
@@ -394,6 +392,7 @@ public class game {
                     int pacManID = convertToId(pacX, pacY);
 
                     if (pacManID != ghostID){
+
                         ghostOneClient.sendMessage("p "+ghostID+" "+pacManID);
                         ghostOneRoute.convertStringToList(ghostOneClient.response);
                         System.out.println(ghostOneClient.response);
