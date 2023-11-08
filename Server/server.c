@@ -483,7 +483,7 @@ void receiveMessage() {
 
     if (bytesRead > 0) {
         buffer[bytesRead] = '\0';
-        printf("Mensaje del cliente: %s\n", buffer);
+        //printf("Mensaje del cliente: %s\n", buffer);
         const char* response = "RECIBIDO";
         if (buffer[0]=='p'){
             int start = extractNumber(buffer, 1); 
@@ -562,8 +562,10 @@ void receiveMessage() {
             restart(); 
             response = "REINICIO"; 
         }
-        else if (buffer[0] == '1'){
+        else if (buffer[0] == 'g'){
             int posGO = extractNumber(buffer, 1); 
+            printf("%i ", posGO); 
+            printf("%i ", ghostOneFP);
 
             if (posGO == ghostOneFP || ghostOneFP == -1)
                 response = "true"; 

@@ -323,17 +323,19 @@ public class game {
                 int ghostX  = ghostLocation.x/24; 
                 int ghostY  = ghostLocation.y/24; 
                 int ghostID = convertToId(ghostX, ghostY); 
-                ghostOneClient.sendMessage("1 "+ghostID);
+                System.out.println(ghostID); 
+                ghostOneClient.sendMessage("g "+ghostID);
                 if (ghostOneClient.response.contentEquals("true")){
                     Point pacManLocation = pacManJLabel.getLocation(); 
 
                     int pacX = pacManLocation.x/24;
-                    int pacY = pacManLocation.y/24; 
-                    int pacManID = convertToId(pacX, pacY); 
+                    int pacY = pacManLocation.y/24;
+                    int pacManID = convertToId(pacX, pacY);
+
+                     
                     ghostOneClient.sendMessage("p "+ghostID+" "+pacManID);
 
                     ghostOneRoute.convertStringToList(ghostOneClient.response);
-                    ghostOneRoute.show();
 
                     System.out.println(ghostOneClient.response);
                 }else{
