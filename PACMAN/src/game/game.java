@@ -83,11 +83,9 @@ public class game {
     int type; 
     int typeView = 1;
     boolean hasLose = false; 
-    boolean match = false; 
 
     
-
-    game(JFrame window, JPanel parent, int width, int height, int type){
+    game(JFrame window, JPanel parent, int width, int height, int type, boolean match){
     //---------General Configurations--------//
         this.window =window;
         this.parent = parent; 
@@ -118,7 +116,9 @@ public class game {
         lifesLb.setVisible(true); 
         gamePanel.add(lifesLb); 
    
+    if (match){
 
+        
     //--------------------------------------//
     /////////////////////////////////////////
     ///////////////PAC MAN PLAYER////////////
@@ -137,7 +137,7 @@ public class game {
     /////////////////////////////////////////
     //--------------------------------------//
 
-        
+       
         ghostOne.setImage();
         ghostOne.addLabel();
         ghostOne.move(336, 336);
@@ -153,6 +153,7 @@ public class game {
         ghostFour.setImage();
         ghostFour.addLabel();
         ghostFour.move(264, 336);
+        }
 
         
 
@@ -185,10 +186,8 @@ public class game {
             }
         }
 
-        
-        
-        
-        if (!match){
+        if (match){
+            System.out.println(match);
             showPoints();
             showLife();
             this.moveClient.sendMessage("N "+type);    
@@ -215,11 +214,7 @@ public class game {
     }
 
     
-    game(JFrame window, JPanel parent, int width, int height, int type, int typeview){
-       typeView = typeview;
-       match = true; 
-        new game(window, parent, width, height, type);
-    }
+    
     
     int [][] table(int type){
         if (type==1){
@@ -278,7 +273,7 @@ public class game {
                         lose();
                     else{
                         looseControler();
-                        new game(window, parent, width, height, 2); 
+                        new game(window, parent, width, height, 2, true); 
                     }
 
                 }
@@ -902,11 +897,22 @@ public class game {
         });
         timer.start();
     }
+    
     void getOnlineMatrix(){
         Timer timer = new Timer(200, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             onlinePlayerClient.sendMessage("I " );
             matrix = MatrixConverter.stringToMatrix(onlinePlayerClient.response); 
+            String row = ""; 
+            System.out.println(onlinePlayerClient.response);
+            for(int i = 0; i<matrix.length; i++){
+                for (int j = 0; j<matrix.length; j++){
+                    row = row + " "+matrix[i][j]; 
+                }
+                System.out.println(row);
+                row = "";
+
+            }
             drawMatrix();
             }
         });

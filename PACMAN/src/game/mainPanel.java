@@ -52,7 +52,7 @@ public class mainPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 mainPanel.setVisible(false);
-                new game(window,mainPanel,  width, height, 1); 
+                new game(window,mainPanel,  width, height, 1, true); 
             }
         });
 
@@ -60,7 +60,7 @@ public class mainPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 mainPanel.setVisible(false);
-                new game(window,mainPanel,  width, height, 1,2); 
+                new game(window,mainPanel,  width, height, 1,false); 
             }
         });
         //-------------------------------------------------------------------//

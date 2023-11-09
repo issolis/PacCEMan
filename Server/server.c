@@ -710,7 +710,7 @@ void receiveMessage() {
             printf("%i \n", pointsNeeded); 
             if (matrix[pacY][pacX] == 0 ){
                 matrix[pacY][pacX] = -1; 
-                OnlineMatrix[pacY][pacX] = -1; 
+                OnlineMatrix[pacY][pacX] = 9; 
                 points+=250;
                 char cadena[20]; 
                 sprintf(cadena, "%d", points);
@@ -719,7 +719,7 @@ void receiveMessage() {
             }
             else if (matrix[pacY][pacX] == 3) {
                 matrix[pacY][pacX] = -1;
-                OnlineMatrix[pacY][pacX] = -1; 
+                OnlineMatrix[pacY][pacX] = 9; 
                 points += 1000;
                 char cadena[20];
                 sprintf(cadena, "%d", points);
@@ -729,7 +729,7 @@ void receiveMessage() {
             }
             else if (matrix[pacY][pacX] == 4) {
                 matrix[pacY][pacX] = -1;
-                OnlineMatrix[pacY][pacX] = -1; 
+                OnlineMatrix[pacY][pacX] = 9; 
                 points += 2000;
                 char cadena[20];
                 response = "pacManAttack";
@@ -881,9 +881,20 @@ void receiveMessage() {
             
 
         }
+        
         else if(buffer[0]=='I'){
-            response = matrixToString(OnlineMatrix,15,15); 
-            printf("%s \n \n", response);
+            char cadena[1000];
+            for (int i=0; i<15; i++){
+                for (int j=0; j<15; j++){
+                    printf("%i ", OnlineMatrix[i][j]);
+                    cadena = cadena + " "+sprintf(str, "%d",OnlineMatrix[i][j]);
+                }
+                printf("\n");
+            }
+            printf("\n");
+            printf("%s", cadena);
+            response = cadena; 
+            
         }
         send(clientSocket, response, strlen(response), 0);
         strcpy(route, ""); 

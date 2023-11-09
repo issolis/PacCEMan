@@ -1,21 +1,35 @@
-package processData; 
+package processData;
 
 public class MatrixConverter {
-    public static int[][] stringToMatrix(String matrixString) {
-        String[] rows = matrixString.split("\n");
+    public static int[][] stringToMatrix(String numbers) {
+        int rows = 15;
+        int cols = 15;
 
-        int numRows = rows.length;
-        int numCols = rows[0].split(" ").length;
+        int[][] matrix = new int[rows][cols];
 
-        int[][] matrix = new int[numRows][numCols];
+        String[] tokens = numbers.split(" ");
+        int index = 0;
 
-        for (int i = 0; i < numRows; i++) {
-            String[] elements = rows[i].split(" ");
-            for (int j = 0; j < numCols; j++) {
-                matrix[i][j] = Integer.parseInt(elements[j]);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                matrix[i][j] = Integer.parseInt(tokens[index]);
+                index++;
             }
         }
 
         return matrix;
-    }  
+    }
+
+    public static void printMatrix(int[][] matrix) {
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                System.out.print(matrix[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
 }
