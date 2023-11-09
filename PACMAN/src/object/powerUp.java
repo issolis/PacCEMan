@@ -1,17 +1,16 @@
-package ghost;
+package object;
 
 import java.awt.Point;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
-public class ghost extends object {
-    String type; 
-    public ghost(String type, JPanel parent) {
+public class powerUp extends object{
+
+    public powerUp(JPanel parent) {
         super(parent);
-        this.type = type; 
-        
     }
+
     @Override
     public void move(int xPos, int yPos) {
         objectLabel.setBounds(xPos, yPos, 24, 24);
@@ -20,10 +19,9 @@ public class ghost extends object {
     @Override
     public void setImage() {
         String path = ""; 
-        path = "PACMAN\\src\\resources\\ghost"+type+".png"; 
+        path = "PACMAN\\src\\resources\\image4.png"; 
         image = new ImageIcon(path);
         objectLabel.setIcon(image); 
-        objectLabel.repaint();
     }
 
     @Override
@@ -41,14 +39,18 @@ public class ghost extends object {
     public void deleteObject() {
         objectLabel.setVisible(false);
     }
+
     @Override
     public void setImage(String path) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setImage'");
+        image = new ImageIcon(path);
+        objectLabel.setIcon(image); 
+        objectLabel.repaint(); 
     }
+
     @Override
     public void setVisible(boolean flag) {
-       objectLabel.setVisible(flag);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setVisible'");
     }
     
 }

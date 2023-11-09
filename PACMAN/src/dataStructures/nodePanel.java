@@ -1,5 +1,5 @@
 package dataStructures;
-import ghost.*;
+import object.*;
 
 public class nodePanel {
     public nodePanel next; 

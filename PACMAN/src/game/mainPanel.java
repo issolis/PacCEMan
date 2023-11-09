@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 
 public class mainPanel { 
     JButton start;
+    JButton matchButton;
     JPanel  mainPanel; 
 
     public mainPanel(JFrame window, int width, int height) {
@@ -30,10 +31,15 @@ public class mainPanel {
 
 
         start = new JButton("   Play    ");
-        start.setBounds(width / 2 - 75, height / 2 + 70, 150, 70);
+        start.setBounds(width / 2 - 175, height / 2 + 70, 150, 70);
         Font customFont = new Font("Arial", Font.BOLD, 16);
         start.setFont(customFont);
         start.setVisible(true);
+
+        matchButton = new JButton("   Join    ");
+        matchButton.setBounds(width / 2 +25, height / 2 + 70, 150, 70);
+        matchButton.setFont(customFont);
+        matchButton.setVisible(true);
 
         ImageIcon pacManImage = new ImageIcon("PACMAN\\src\\resources\\inicioRedimensionadoSinFondo.gif");
 
@@ -49,11 +55,20 @@ public class mainPanel {
                 new game(window,mainPanel,  width, height, 1); 
             }
         });
+
+        matchButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                mainPanel.setVisible(false);
+                new game(window,mainPanel,  width, height, 1,2); 
+            }
+        });
         //-------------------------------------------------------------------//
 
         mainPanel.add(pacManLabel);
         mainPanel.add(bgLabel); 
         mainPanel.add(start);
+        mainPanel.add(matchButton);
         
         
         window.add(mainPanel);

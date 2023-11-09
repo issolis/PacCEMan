@@ -44,6 +44,23 @@ int matrix[15][15] = {
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
         };
+int OnlineMatrix[15][15] = {
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0},
+            {0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0},
+            {0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0},
+            {0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
+            {0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0},
+            {0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+            {0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0},
+            {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+        };
 
 /*---------------PathFinding Data Structures--------------------*/
 struct node
@@ -425,6 +442,18 @@ void constructor(){
 /////////////////////////////////////Server/////////
 ////////////////////////////////////////////////////
 //-----------------------Server-------------------//
+void replaceValuesWithZero(int rows, int cols) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            int value = OnlineMatrix[i][j];
+            if (value == 2 || (value >= 5 && value <= 8)) {
+                OnlineMatrix[i][j] = 0;
+            }
+        }
+    }
+}
+
+
 void restart(int type){
     if(type==1){
    int matrix_[15][15] ={
@@ -448,6 +477,7 @@ void restart(int type){
         for (int i = 0; i<15; i++){
             for(int j = 0; j<15; j++){
                 matrix[i][j] = matrix_[i][j]; 
+                OnlineMatrix[i][j] = matrix_[i][j]; 
             }
         }
         lifes = 3;
@@ -474,6 +504,7 @@ void restart(int type){
         for (int i = 0; i<15; i++){
             for(int j = 0; j<15; j++){
                 matrix[i][j] = matrix_[i][j]; 
+                OnlineMatrix[i][j] = matrix_[i][j]; 
             }
         }
     } 
@@ -654,7 +685,8 @@ void receiveMessage() {
                 response = "false"; // Copia la cadena "false" en response
             else {
                 matrix[pacY][pacX] = 3;
-                response = "true"; // Copia la cadena "true" en response
+                OnlineMatrix[pacY][pacX] = 3; 
+                response = "true"; 
             }
         }
         else if (buffer[0] == 'q') {
@@ -663,6 +695,7 @@ void receiveMessage() {
             int pacX = convertX(posPower); 
             int pacY = convertY(posPower); 
             matrix[pacY][pacX] = 4;
+            OnlineMatrix[pacY][pacX] = 4;
             char cadena[20];
             sprintf(cadena, "%d", posPower);
             response = cadena;
@@ -677,6 +710,7 @@ void receiveMessage() {
             printf("%i \n", pointsNeeded); 
             if (matrix[pacY][pacX] == 0 ){
                 matrix[pacY][pacX] = -1; 
+                OnlineMatrix[pacY][pacX] = -1; 
                 points+=250;
                 char cadena[20]; 
                 sprintf(cadena, "%d", points);
@@ -685,6 +719,7 @@ void receiveMessage() {
             }
             else if (matrix[pacY][pacX] == 3) {
                 matrix[pacY][pacX] = -1;
+                OnlineMatrix[pacY][pacX] = -1; 
                 points += 1000;
                 char cadena[20];
                 sprintf(cadena, "%d", points);
@@ -694,6 +729,7 @@ void receiveMessage() {
             }
             else if (matrix[pacY][pacX] == 4) {
                 matrix[pacY][pacX] = -1;
+                OnlineMatrix[pacY][pacX] = -1; 
                 points += 2000;
                 char cadena[20];
                 response = "pacManAttack";
@@ -806,7 +842,7 @@ void receiveMessage() {
                 response ="g4";    
         }
        
-       else if (buffer[0] == 'y'){
+        else if (buffer[0] == 'y'){
         if (won==1)
             response ="won";
         else
@@ -814,6 +850,41 @@ void receiveMessage() {
         
        }
        
+        else if (buffer[0] == 'i'){
+            int pacID = extractNumber(buffer,1);
+            int g1 = extractNumber(buffer,2);
+            int g2 = extractNumber(buffer,3);
+            int g3 = extractNumber(buffer,4);
+            int g4 = extractNumber(buffer,5);
+
+            int pacX=convertX(pacID);
+            int pacY=convertY(pacID);
+
+            int g1X=convertX(g1);
+            int g2X=convertX(g2);
+            int g3X=convertX(g3);
+            int g4X=convertX(g4);
+
+            int g1Y=convertY(g1);
+            int g2Y=convertY(g2);
+            int g3Y=convertY(g3);
+            int g4Y=convertY(g4);
+
+            replaceValuesWithZero(15,15); 
+
+            OnlineMatrix[pacY][pacX] = 2; 
+            OnlineMatrix[g1Y][g2X] = 5;
+            OnlineMatrix[g2Y][g2X] = 6;
+            OnlineMatrix[g3Y][g3X] = 7;
+            OnlineMatrix[g4Y][g4X] = 8;
+
+            
+
+        }
+        else if(buffer[0]=='I'){
+            response = matrixToString(OnlineMatrix,15,15); 
+            printf("%s \n \n", response);
+        }
         send(clientSocket, response, strlen(response), 0);
         strcpy(route, ""); 
     }

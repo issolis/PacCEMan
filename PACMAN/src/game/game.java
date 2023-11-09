@@ -16,10 +16,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import ghost.*;
+
 import dataStructures.list;
 import dataStructures.listPanel;
 import dataStructures.nodePanel;
+import processData.*;  
+import object.*;
 
 public class game {
     JPanel gamePanel; 
@@ -79,7 +81,9 @@ public class game {
     boolean attackPos = true;
 
     int type; 
+    int typeView = 1;
     boolean hasLose = false; 
+    boolean match = false; 
 
     
 
@@ -181,20 +185,27 @@ public class game {
             }
         }
 
-        this.moveClient.sendMessage("N "+type);
         
-        direcction();
-        showPoints();
-        showLife();
-        move(); 
-        moveGhostOne();
-        moveGhostTwo();
-        moveGhostThree();
-        moveGhostFour();
-        checkCollision();
-        powerUp();
-        fruitGenerator();
-        checkVictory();
+        
+        
+        if (!match){
+            showPoints();
+            showLife();
+            this.moveClient.sendMessage("N "+type);    
+            direcction();
+            move(); 
+            moveGhostOne();
+            moveGhostTwo();
+            moveGhostThree();
+            moveGhostFour();
+            checkCollision();
+            powerUp();
+            fruitGenerator();
+            checkVictory();
+            setOnlineMatrix();
+        }else{
+            getOnlineMatrix();
+        }
 
         gamePanel.add(ground);
         window.add(gamePanel);
@@ -203,6 +214,13 @@ public class game {
         window.setResizable(false); 
     }
 
+    
+    game(JFrame window, JPanel parent, int width, int height, int type, int typeview){
+       typeView = typeview;
+       match = true; 
+        new game(window, parent, width, height, type);
+    }
+    
     int [][] table(int type){
         if (type==1){
             int maze [][] = {
@@ -255,7 +273,6 @@ public class game {
         Timer timer = new Timer(200, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 winnerClient.sendMessage("y ");
-                System.out.println(winnerClient.response);
                 if (winnerClient.response.contentEquals("won")){
                     if (type == 2)
                         lose();
@@ -510,15 +527,6 @@ public class game {
         }
        
         
-    }
-
-    void drawMatrix(){
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix.length; j++) {
-                blockMatrix[i][j].setIcon(new ImageIcon("PACMANJAVA\\src\\resources\\image" + matrix[i][j] + ".png"));
-                blockMatrix[i][j].setBounds(j * 24, i * 24, 24, 24);
-            }
-        }
     }
     
     void waitResponse(){
@@ -854,4 +862,56 @@ public class game {
         timer.start();
 
     }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////OBSERVER////////////////////////////////////////////////
+    //////////////////////OBSERVER/////////////////////////////////////////////OBSERVER///////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///OBSERVER////////////////////////////////OBSERVER///////////////////////////////////OBSERVER////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////OBSERVER///////////////////////////////////OBSERVER//////////////////////////////
+    /////////////////////////////////////////OBSERVER/////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    
+    client onlinePlayerClient = new client(12345);
+
+     void drawMatrix(){
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix.length; j++) {
+                blockMatrix[i][j].setIcon(new ImageIcon("PACMAN\\src\\onlineResources\\image" + matrix[i][j] + ".png"));
+                blockMatrix[i][j].setBounds(j * 24, i * 24, 24, 24);
+            }
+        }
+    }
+
+    void setOnlineMatrix(){
+        Timer timer = new Timer(200, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int g1ID = convertToId(ghostOne.getLocation().x/24, ghostOne.getLocation().y/24);
+                int g2ID = convertToId(ghostTwo.getLocation().x/24, ghostTwo.getLocation().y/24);
+                int g3ID = convertToId(ghostThree.getLocation().x/24, ghostThree.getLocation().y/24);
+                int g4ID = convertToId(ghostFour.getLocation().x/24, ghostFour.getLocation().y/24);
+
+                int pacManID = convertToId(pacManJLabel.getLocation().x/24,pacManJLabel.getLocation().y/24);
+                onlinePlayerClient.sendMessage("i "+ pacManID + " " + g1ID + " " + g2ID + " " + g3ID + " " + g4ID  );
+
+                //matrix = MatrixConverter.stringToMatrix(onlinePlayerClient.response); 
+            }
+        });
+        timer.start();
+    }
+    void getOnlineMatrix(){
+        Timer timer = new Timer(200, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            onlinePlayerClient.sendMessage("I " );
+            matrix = MatrixConverter.stringToMatrix(onlinePlayerClient.response); 
+            drawMatrix();
+            }
+        });
+        timer.start();
+    }
+
+   
 }

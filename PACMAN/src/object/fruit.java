@@ -1,4 +1,4 @@
-package ghost;
+package object;
 
 import java.awt.Point;
 
