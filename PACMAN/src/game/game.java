@@ -44,6 +44,7 @@ public class game {
     client ghostFourClient = new client(12345); 
     client fruitClient = new client(12345);
     client powerUpClient = new client(12345);
+    client winnerClient = new client(12345);
 
     JLabel pointsLb;
     String points = "0";
@@ -60,6 +61,14 @@ public class game {
     list ghostTwoRoute = new list();
     list ghostThreeRoute = new list();
     list ghostFourRoute = new list();
+
+    boolean ghostOneEated   = false;
+    boolean ghostTwoEated   = false;
+    boolean ghostThreeEated = false;
+    boolean ghostFourEated  = false;
+    boolean lose = false;
+
+
 
     listPanel fruitList = new listPanel(); 
     listPanel powerUpList = new listPanel(); 
@@ -178,6 +187,7 @@ public class game {
         checkCollision();
         powerUp();
         fruitGenerator();
+        checkVictory();
 
         gamePanel.add(ground);
         window.add(gamePanel);
@@ -212,6 +222,17 @@ public class game {
     ////////////////////////////////////////////
     ////////////Player functionalities/////////
     ///////////////////////////////////////////
+    void checkVictory(){
+        Timer timer = new Timer(200, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                winnerClient.sendMessage("y ");
+                System.out.println(winnerClient.response);
+                if (winnerClient.response.contentEquals("won"))
+                    lose();
+            }
+        });
+        timer.start();
+    }
     
     void showLife(){
         Timer timer = new Timer(200, new ActionListener() {
@@ -235,16 +256,15 @@ public class game {
     void checkCollision(){
         Timer timer = new Timer(50, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                int g1ID = convertToId(ghostOne.getLocation().x/24, ghostOne.getLocation().y/24);
+                int g2ID = convertToId(ghostTwo.getLocation().x/24, ghostTwo.getLocation().y/24);
+                int g3ID = convertToId(ghostThree.getLocation().x/24, ghostThree.getLocation().y/24);
+                int g4ID = convertToId(ghostFour.getLocation().x/24, ghostFour.getLocation().y/24);
+
+                int pacManID = convertToId(pacManJLabel.getLocation().x/24,pacManJLabel.getLocation().y/24);
                 if (againstPacMan){
                     if (attackPos){
-                        int g1ID = convertToId(ghostOne.getLocation().x/24, ghostOne.getLocation().y/24);
-                        int g2ID = convertToId(ghostTwo.getLocation().x/24, ghostTwo.getLocation().y/24);
-                        int g3ID = convertToId(ghostThree.getLocation().x/24, ghostThree.getLocation().y/24);
-                        int g4ID = convertToId(ghostFour.getLocation().x/24, ghostFour.getLocation().y/24);
-                        int pacManID = convertToId(pacManJLabel.getLocation().x/24,pacManJLabel.getLocation().y/24);
-
                         generalClient.sendMessage("c "+ pacManID + " "+ g1ID + " "+ g2ID +" "+ g3ID + " "+ g4ID);
-
                         if (generalClient.response.contains("killed")){
                             lose();
                         }
@@ -255,6 +275,28 @@ public class game {
                     }
 
                 }else{
+                    generalClient.sendMessage("C "+ pacManID + " "+ g1ID + " "+ g2ID +" "+ g3ID + " "+ g4ID);
+                    String response = generalClient.response;
+                    
+
+                    if (response.contentEquals("g1") && !ghostOneEated){
+                        ghostOneEated = true; 
+                        ghostOne.objectLabel.setVisible(false);
+                        
+                    }
+                    else if (response.contentEquals("g2") && !ghostTwoEated){
+                        ghostTwoEated = true; 
+                        ghostTwo.objectLabel.setVisible(false);
+                    }
+                    else if (response.contentEquals("g3") && !ghostTwoEated){
+                        ghostThreeEated = true; 
+                        ghostThree.objectLabel.setVisible(false);
+                    }
+                    else if (response.contentEquals("g4") && !ghostFourEated){
+                        ghostFourEated = true; 
+                        ghostFour.objectLabel.setVisible(false);
+                    }
+                    
                     
                 }
             }
@@ -374,9 +416,6 @@ public class game {
 
         int pacY = pacManPoint.x/24; 
         int pacX = pacManPoint.y/24;
-
-        
-
         if (direction == 1){
             this.moveClient.sendMessage("R " +pacY+ " "+ pacX);
             if (this.moveClient.response.contentEquals("false"))
@@ -402,7 +441,11 @@ public class game {
     }
     
     void checkPoints(int pacX, int pacY){
+        if (generalClient.allowConnection)
         this.generalClient.sendMessage("S " +pacY+ " "+ pacX);
+
+        String response = this.generalClient.response;
+       
         if (!this.generalClient.response.contentEquals("empty") && !this.generalClient.response.contentEquals("pacManAttack")){
             nodePanel node = fruitList.getElementByID(convertToId(pacX, pacY)); 
             if (node == null)
@@ -415,7 +458,7 @@ public class game {
             points = generalClient.response; 
         }
         else if(this.generalClient.response.contentEquals("pacManAttack")){
-            attackPos = false; 
+
             nodePanel node = powerUpList.getElementByID(convertToId(pacX, pacY)); 
             if (node == null)
                 blockMatrix[pacY][pacX].setIcon(new ImageIcon("PACMAN\\src\\resources\\image-1.png"));
@@ -424,8 +467,11 @@ public class game {
                 node.element.addLabel();
                 powerUpList.deleteElement(node);
             }
-            waitResponse();
+            againstPacMan = false; 
+            waitPacManAttack();
         }
+       
+        
     }
 
     void drawMatrix(){
@@ -444,41 +490,74 @@ public class game {
             @Override
             public void run() {
               attackPos = true; 
+              againstPacMan = true; 
             }
         };
         timer.schedule(tarea, 5000);
     }
    
+    void waitPacManAttack(){
+        java.util.Timer timer = new java.util.Timer();
+
+        TimerTask tarea = new TimerTask() {
+            @Override
+            public void run() {
+                againstPacMan = true; 
+                ghostOneEated =false;
+                ghostTwoEated =false; 
+                ghostThreeEated = false; 
+                ghostFourEated =false;
+                  
+                ghostOne.setVisible(true);
+                ghostTwo.setVisible(true);
+                ghostThree.setVisible(true);
+                ghostFour.setVisible(true);
+                
+            }
+        };
+        timer.schedule(tarea, 10000);
+    }
+
+    void looseControler(){
+        ghostOneRoute.head = null; 
+        ghostTwoRoute.head = null; 
+        ghostThreeRoute.head = null; 
+        ghostFourRoute.head =null; 
+
+        ghostOne.move(336, 336);
+        ghostTwo.move(312, 336);
+        ghostThree.move(288, 336);
+        ghostFour.move(264, 336);
+
+        ghostOneClient.allowConnection = false; 
+        ghostTwoClient.allowConnection = false;
+        ghostThreeClient.allowConnection = false; 
+        ghostFourClient.allowConnection = false; 
+        moveClient.allowConnection = false; 
+        generalClient.allowConnection = false; 
+        fruitClient.allowConnection = false; 
+        powerUpClient.allowConnection = false; 
+        winnerClient.allowConnection = false; 
+
+        gamePanel.setVisible(false);
+        parent.setVisible(true);   
+        window.remove(gamePanel); 
+
+        gamePanel = null; 
+}
+    
     void lose(){
     java.util.Timer timer = new java.util.Timer();
 
         TimerTask tarea = new TimerTask() {
             @Override
             public void run() {
+                try {
+                    looseControler();
+                } catch (Exception e) {
+                  
+                }
 
-                ghostOneRoute.head = null; 
-                ghostTwoRoute.head = null; 
-                ghostThreeRoute.head = null; 
-                ghostFourRoute.head =null; 
-
-                ghostOne.move(78, 78);
-                ghostTwo.move(78, 78);
-                ghostThree.move(78, 78);
-                ghostFour.move(78, 78);
-
-                ghostOneClient.allowConnection = false; 
-                ghostTwoClient.allowConnection = false;
-                ghostThreeClient.allowConnection = false; 
-                ghostFourClient.allowConnection = false; 
-                moveClient.allowConnection = false; 
-                generalClient.allowConnection = false; 
-                fruitClient.allowConnection = false; 
-
-                gamePanel.setVisible(false);
-                parent.setVisible(true);   
-                window.remove(gamePanel); 
-
-                gamePanel = null; 
             }
         };
         timer.schedule(tarea, 1500);
@@ -487,18 +566,20 @@ public class game {
     void powerUp(){
         Timer timer = new Timer(15000, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                powerUpClient.sendMessage("q");
-                int powerID = Integer.parseInt(powerUpClient.response);
-                int coordX  = powerID%15; 
-                int coordY = powerID/15; 
-                object power = new powerUp(ground);
-                power.setImage();
-                power.addLabel();
-                power.move(coordX*24, coordY*24);
-                ground.setComponentZOrder(power.objectLabel, 1); 
-                powerUpList.insert(power, powerID);
+                if (powerUpClient.allowConnection){
+                    powerUpClient.sendMessage("q");
+                    int powerID = Integer.parseInt(powerUpClient.response);
+                    int coordX  = powerID%15; 
+                    int coordY = powerID/15; 
 
-                System.out.println("ENTRAMOS"); 
+                    blockMatrix[coordY][coordX].setIcon(new ImageIcon("PACMAN\\src\\resources\\image-1.png"));
+                    object power = new powerUp(ground);
+                    power.setImage();
+                    power.addLabel();
+                    power.move(coordX*24, coordY*24);
+                    ground.setComponentZOrder(power.objectLabel, 1); 
+                    powerUpList.insert(power, powerID); 
+                }
                 
             
             }
@@ -596,7 +677,7 @@ public class game {
                         //System.out.println(ghostOneClient.response);
                     }
                 }else{
-                    if(ghostOneRoute.head!= null){
+                    if(ghostOneRoute.head!= null && !ghostOneEated){
                         int id = ghostOneRoute.head.id; 
                         int newX = id%15*24; 
                         int newY = id/15*24; 
@@ -637,7 +718,7 @@ public class game {
                         //System.out.println(ghostOneClient.response);
                     }
                 }else{
-                    if(ghostTwoRoute.head!= null){
+                    if(ghostTwoRoute.head!= null && !ghostTwoEated){
                         int id = ghostTwoRoute.head.id; 
                         int newX = id%15*24; 
                         int newY = id/15*24; 
@@ -677,7 +758,7 @@ public class game {
                       
                     }
                 }else{
-                    if(ghostThreeRoute.head!= null){
+                    if(ghostThreeRoute.head!= null && !ghostThreeEated){
                         int id = ghostThreeRoute.head.id; 
                         int newX = id%15*24; 
                         int newY = id/15*24; 
@@ -716,7 +797,7 @@ public class game {
                         ghostFourRoute.convertStringToList(ghostFourClient.response);
                     }
                 }else{
-                    if(ghostFourRoute.head!= null){
+                    if(ghostFourRoute.head!= null && !ghostFourEated){
                         int id = ghostFourRoute.head.id; 
                         int newX = id%15*24; 
                         int newY = id/15*24; 

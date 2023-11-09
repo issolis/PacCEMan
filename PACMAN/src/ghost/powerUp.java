@@ -46,5 +46,11 @@ public class powerUp extends object{
         objectLabel.setIcon(image); 
         objectLabel.repaint(); 
     }
+
+    @Override
+    public void setVisible(boolean flag) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setVisible'");
+    }
     
 }

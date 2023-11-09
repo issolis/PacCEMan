@@ -45,6 +45,12 @@ public class fruit extends object {
     public void deleteObject() {
         objectLabel.setVisible(false);
     }
+
+    @Override
+    public void setVisible(boolean flag) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setVisible'");
+    }
     
     
 }

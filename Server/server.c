@@ -23,6 +23,9 @@ int lastPoints = 0;
 int followedTimes = 0;
 
 int ended = -1; 
+int pointsNeeded = 0;
+
+int won = 0; 
 
 int matrix[15][15] = {
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -293,6 +296,17 @@ void blockNodes (){
     }
 }
 
+void neededPoints (){
+    pointsNeeded = 0;
+    for (int i=0; i<15; i++){
+        for (int j=0; j<15; j++){
+            if (matrix[i][j]==1)
+               pointsNeeded++; 
+        }
+    }
+    pointsNeeded =225 - pointsNeeded; 
+}
+
 void pathfinding(int inicialNodeId, int finalNodeId){
 
     defineH(finalNodeId);
@@ -442,13 +456,15 @@ void restart(){
     ghostFourFP  = -1; 
     lifes = 3;
     lastPoints = 0; 
+    won = 0; 
+    neededPoints(); 
 }
 
 int randNumber(int id){
     int x = rand()%225; 
     int posX = convertX(x);
     int posY = convertY(x);
-    while (matrix[posY][posX]==1 || x==id){
+    while (matrix[posY][posX]==1 || x==id || matrix[posY][posX]==2 || matrix[posY][posX]==4 || matrix[posY][posX]==3){
         x = rand()%225;  
         posX = convertX(x);
         posY = convertY(x);
@@ -459,6 +475,7 @@ int randNumber(int id){
 
 int initServer(int serverPort) {
     WSADATA wsaData;
+    neededPoints(); 
 
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
         fprintf(stderr, "Error al inicializar Winsock.\n");
@@ -552,7 +569,7 @@ void receiveMessage() {
                
             
             
-            printf("%i %i \n", start, end); 
+           // printf("%i %i \n", start, end); 
             constructor(); 
             madeMatrix(raw, colum);
             blockNodes(); 
@@ -627,18 +644,18 @@ void receiveMessage() {
         }
         
         
-
-        
         else if (buffer[0] == 'S'){
+
             int pacY = extractNumber(buffer, 1); 
             int pacX = extractNumber(buffer, 2); 
-
+            printf("%i \n", pointsNeeded); 
             if (matrix[pacY][pacX] == 0 ){
                 matrix[pacY][pacX] = -1; 
                 points+=250;
                 char cadena[20]; 
                 sprintf(cadena, "%d", points);
                 response = cadena; 
+                pointsNeeded--;
             }
             else if (matrix[pacY][pacX] == 3) {
                 matrix[pacY][pacX] = -1;
@@ -646,12 +663,18 @@ void receiveMessage() {
                 char cadena[20];
                 sprintf(cadena, "%d", points);
                 response = cadena;
+                pointsNeeded--;
+                
             }
             else if (matrix[pacY][pacX] == 4) {
                 matrix[pacY][pacX] = -1;
-                points += 0;
+                points += 2000;
                 char cadena[20];
                 response = "pacManAttack";
+                pointsNeeded--;
+            }
+            else if (pointsNeeded <= 0){
+                won = 1;
             }
             else
                 response = "empty";
@@ -695,8 +718,7 @@ void receiveMessage() {
         }
         else if (buffer[0] == 'H'){
             int posGO = extractNumber(buffer, 1); 
-            printf("%i", posGO);
-            printf("%i \n", ghostFourFP);
+           
             
             if (posGO == ghostFourFP || ghostFourFP == -1){
                 response = "true"; 
@@ -738,6 +760,34 @@ void receiveMessage() {
                 }
             }
         }
+        
+        else if (buffer[0] == 'C'){
+            int pacID = extractNumber(buffer, 1);
+            int g1ID = extractNumber(buffer, 2);
+            int g2ID = extractNumber(buffer, 3);
+            int g3ID = extractNumber(buffer, 4);
+            int g4ID = extractNumber(buffer, 5);
+
+         
+            if(pacID == g1ID){
+                response ="g1";
+            }
+            else if(pacID == g2ID)
+                response ="g2";
+            else if(pacID == g3ID)
+                response ="g3";
+            else if(pacID == g4ID)
+                response ="g4";    
+        }
+       
+       else if (buffer[0] == 'y'){
+        if (won==1)
+            response ="won";
+        else
+            response ="empty";
+        
+       }
+       
         send(clientSocket, response, strlen(response), 0);
         strcpy(route, ""); 
     }

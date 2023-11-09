@@ -46,5 +46,9 @@ public class ghost extends object {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setImage'");
     }
+    @Override
+    public void setVisible(boolean flag) {
+       objectLabel.setVisible(flag);
+    }
     
 }
