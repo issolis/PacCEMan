@@ -444,7 +444,6 @@ public class game {
         if (generalClient.allowConnection)
         this.generalClient.sendMessage("S " +pacY+ " "+ pacX);
 
-        String response = this.generalClient.response;
        
         if (!this.generalClient.response.contentEquals("empty") && !this.generalClient.response.contentEquals("pacManAttack")){
             nodePanel node = fruitList.getElementByID(convertToId(pacX, pacY)); 
