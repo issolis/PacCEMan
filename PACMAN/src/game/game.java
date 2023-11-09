@@ -59,9 +59,7 @@ public class game {
 
     boolean againstPacMan = true;
     boolean attackPos = true;
-
-
-
+    
 
     game(JFrame window, JPanel parent, int width, int height){
     //---------General Configurations--------//
@@ -268,47 +266,49 @@ public class game {
     void move (){
         Timer timer = new Timer(200, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (right && checkBlockedPosition(1)){
-                    Point pacManLocation = pacManJLabel.getLocation();
-                    pacManJLabel.setBounds(pacManLocation.x+24, pacManLocation.y, 24,24);
+            if (generalClient.allowConnection){
+                    if (right && checkBlockedPosition(1)){
+                        Point pacManLocation = pacManJLabel.getLocation();
+                        pacManJLabel.setBounds(pacManLocation.x+24, pacManLocation.y, 24,24);
 
-                    int pacX = pacManLocation.x/24; 
-                    int pacY = pacManLocation.y/24;
+                        int pacX = pacManLocation.x/24; 
+                        int pacY = pacManLocation.y/24;
 
-                    checkPoints(pacX+1, pacY); 
+                        checkPoints(pacX+1, pacY); 
+
+                    }
+                    else if(left && checkBlockedPosition(2)){
+                        Point pacManLocation = pacManJLabel.getLocation();
+                        pacManJLabel.setBounds(pacManLocation.x-24, pacManLocation.y, 24,24); 
+
+                        int pacX = pacManLocation.x/24; 
+                        int pacY = pacManLocation.y/24;
+
+                        checkPoints(pacX-1, pacY); 
+
+                    }
+                    else if(up && checkBlockedPosition(3)){
+                        Point pacManLocation = pacManJLabel.getLocation();
+                        pacManJLabel.setBounds(pacManLocation.x, pacManLocation.y-24, 24,24); 
+
+                        int pacX = pacManLocation.x/24; 
+                        int pacY = pacManLocation.y/24;
+
+                        checkPoints(pacX, pacY-1); 
+
+                    }
+                    else if(down && checkBlockedPosition(4)){
+                        Point pacManLocation = pacManJLabel.getLocation();
+                        pacManJLabel.setBounds(pacManLocation.x, pacManLocation.y+24, 24,24); 
+
+                        int pacX = pacManLocation.x/24; 
+                        int pacY = pacManLocation.y/24;
+
+                        checkPoints(pacX, pacY+1); 
+                    }
 
                 }
-                else if(left && checkBlockedPosition(2)){
-                    Point pacManLocation = pacManJLabel.getLocation();
-                    pacManJLabel.setBounds(pacManLocation.x-24, pacManLocation.y, 24,24); 
-
-                    int pacX = pacManLocation.x/24; 
-                    int pacY = pacManLocation.y/24;
-
-                    checkPoints(pacX-1, pacY); 
-
-                }
-                else if(up && checkBlockedPosition(3)){
-                    Point pacManLocation = pacManJLabel.getLocation();
-                    pacManJLabel.setBounds(pacManLocation.x, pacManLocation.y-24, 24,24); 
-
-                    int pacX = pacManLocation.x/24; 
-                    int pacY = pacManLocation.y/24;
-
-                    checkPoints(pacX, pacY-1); 
-
-                }
-                else if(down && checkBlockedPosition(4)){
-                    Point pacManLocation = pacManJLabel.getLocation();
-                    pacManJLabel.setBounds(pacManLocation.x, pacManLocation.y+24, 24,24); 
-
-                    int pacX = pacManLocation.x/24; 
-                    int pacY = pacManLocation.y/24;
-
-                    checkPoints(pacX, pacY+1); 
-                }
-
-            }
+        }
 
         });
         timer.start();
@@ -428,9 +428,30 @@ public class game {
         TimerTask tarea = new TimerTask() {
             @Override
             public void run() {
+
+                ghostOneRoute.head = null; 
+                ghostTwoRoute.head = null; 
+                ghostThreeRoute.head = null; 
+                ghostFourRoute.head =null; 
+
+                ghostOne.move(78, 78);
+                ghostTwo.move(78, 78);
+                ghostThree.move(78, 78);
+                ghostFour.move(78, 78);
+
+                ghostOneClient.allowConnection = false; 
+                ghostTwoClient.allowConnection = false;
+                ghostThreeClient.allowConnection = false; 
+                ghostFourClient.allowConnection = false; 
+                moveClient.allowConnection = false; 
+                generalClient.allowConnection = false; 
+                fruitClient.allowConnection = false; 
+
                 gamePanel.setVisible(false);
                 parent.setVisible(true);   
                 window.remove(gamePanel); 
+
+                gamePanel = null; 
             }
         };
         timer.schedule(tarea, 1500);

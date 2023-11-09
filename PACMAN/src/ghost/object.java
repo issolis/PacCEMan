@@ -13,9 +13,8 @@ public abstract class object {
     ImageIcon image; 
     String type; 
 
-    public object(String type, JPanel parent){
+    public object(JPanel parent){
         this.parent = parent; 
-        this.type = type; 
         objectLabel = new JLabel();
     } 
 
@@ -25,7 +24,4 @@ public abstract class object {
     public abstract Point getLocation(); 
     public abstract void deleteObject();
 
-    public Object getRoute() {
-        return null;
-    }
 }
