@@ -26,6 +26,8 @@ public class game {
     JPanel parent; 
     JPanel ground = new JPanel();  
     JFrame window;
+    int width; 
+    int height;
     JLabel blockMatrix[][];
     JLabel pacManJLabel; 
     int matrix[][]; 
@@ -75,12 +77,19 @@ public class game {
 
     boolean againstPacMan = true;
     boolean attackPos = true;
+
+    int type; 
+    boolean hasLose = false; 
+
     
 
-    game(JFrame window, JPanel parent, int width, int height){
+    game(JFrame window, JPanel parent, int width, int height, int type){
     //---------General Configurations--------//
-        this.window=window;
+        this.window =window;
         this.parent = parent; 
+        this.width  =width;
+        this.height = height;
+        this.type = type; 
 
         gamePanel = new JPanel();     
         gamePanel.setLayout(null);
@@ -88,8 +97,6 @@ public class game {
         gamePanel.setVisible(true);
         gamePanel.setBackground(Color.BLUE);
    
-    
-        
         ground.setLayout(null);
         ground.setBounds(39,35, 360,360);
         ground.setVisible(true);
@@ -116,7 +123,7 @@ public class game {
 
         pacManJLabel = new JLabel(); 
         pacManJLabel.setIcon(new ImageIcon("PACMAN\\src\\resources\\image2.png"));
-        pacManJLabel.setBounds(24,24,24,24); 
+        pacManJLabel.setBounds(0,0,24,24); 
         pacManJLabel.setVisible(true); 
         ground.add(pacManJLabel); 
 
@@ -161,7 +168,7 @@ public class game {
      //--------------------------------------//
      //-------------Start game---------------//
     
-        matrix = table();
+        matrix = table(type);
         blockMatrix = new JLabel[15][15];  
 
         for (int i = 0; i < matrix.length; i++) {
@@ -174,7 +181,7 @@ public class game {
             }
         }
 
-        this.moveClient.sendMessage("N");
+        this.moveClient.sendMessage("N "+type);
         
         direcction();
         showPoints();
@@ -196,26 +203,48 @@ public class game {
         window.setResizable(false); 
     }
 
-    int [][] table(){
-
-        int[][] maze = {
+    int [][] table(int type){
+        if (type==1){
+            int maze [][] = {
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0},
+                {0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0},
+                {0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0},
+                {0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
+                {0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0},
+                {0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+                {0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0},
+                {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+            };
+        return maze; 
+        }
+        int maze[][] = {
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0},
-            {0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0},
-            {0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0},
-            {0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
-            {0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0},
+            {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+            {0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0},
+            {0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0},
+            {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0},
             {0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-            {0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0},
-            {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+            {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+            {0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0},
+            {0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0},
+            {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
+            {0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0},
+            {0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
         };
-        return maze; 
+        
+        
+
+        return  maze;
     }
     
     //----------------------------------------//
@@ -227,8 +256,17 @@ public class game {
             public void actionPerformed(ActionEvent e) {
                 winnerClient.sendMessage("y ");
                 System.out.println(winnerClient.response);
-                if (winnerClient.response.contentEquals("won"))
-                    lose();
+                if (winnerClient.response.contentEquals("won")){
+                    if (type == 2)
+                        lose();
+                    else{
+                        looseControler();
+                        new game(window, parent, width, height, 2); 
+                    }
+
+                }
+
+                    
             }
         });
         timer.start();
@@ -266,6 +304,7 @@ public class game {
                     if (attackPos){
                         generalClient.sendMessage("c "+ pacManID + " "+ g1ID + " "+ g2ID +" "+ g3ID + " "+ g4ID);
                         if (generalClient.response.contains("killed")){
+                            hasLose = true;
                             lose();
                         }
                         else if (generalClient.response.contains("minusLife")){
@@ -537,10 +576,14 @@ public class game {
         fruitClient.allowConnection = false; 
         powerUpClient.allowConnection = false; 
         winnerClient.allowConnection = false; 
-
         gamePanel.setVisible(false);
-        parent.setVisible(true);   
         window.remove(gamePanel); 
+        if (type==2 || hasLose){
+        
+        parent.setVisible(true);   
+        
+        }
+        
 
         gamePanel = null; 
 }

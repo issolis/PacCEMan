@@ -46,7 +46,7 @@ public class mainPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 mainPanel.setVisible(false);
-                new game(window,mainPanel,  width, height); 
+                new game(window,mainPanel,  width, height, 1); 
             }
         });
         //-------------------------------------------------------------------//
