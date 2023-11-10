@@ -883,7 +883,7 @@ void receiveMessage() {
         }
         
         else if(buffer[0]=='I'){
-            char cadena[1000];
+            char cadena[10000];
             for (int i=0; i<15; i++){
                 for (int j=0; j<15; j++){
                     printf("%i ", OnlineMatrix[i][j]);
