@@ -84,6 +84,7 @@ public class game {
     int typeView = 1;
     boolean hasLose = false; 
 
+    ArduinoSerialReader arduinoReader = new ArduinoSerialReader();
     
     game(JFrame window, JPanel parent, int width, int height, int type, boolean match){
     //---------General Configurations--------//
@@ -202,6 +203,9 @@ public class game {
             fruitGenerator();
             checkVictory();
             setOnlineMatrix();
+
+            arduinoReader.start();
+            ArduinoQueueChecker();
         }else{
             getOnlineMatrix();
         }
@@ -414,6 +418,54 @@ public class game {
         });
         timer.start();
     }
+    
+    void ArduinoQueueChecker(){
+        Timer timer = new Timer(50, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Check for messages from the ArduinoSerialReader
+                String receivedMessage = arduinoReader.getNextMessage();
+                //System.out.println("This is the message:" + receivedMessage);
+
+                // Process the received message and print appropriate messages
+                if (receivedMessage != null) {
+                    switch (receivedMessage.trim()) {
+                        case "1":
+                            System.out.println("Arriba");
+                            up    = true; 
+                            down  = false; 
+                            left  = false; 
+                            right = false;
+                            break;
+                        case "2":
+                            System.out.println("Abajo");
+                            up    = false; 
+                            down  = true; 
+                            left  = false; 
+                            right = false;
+                            break;
+                        case "3":
+                            System.out.println("Derecha");
+                            up    = false; 
+                            down  = false; 
+                            left  = false; 
+                            right = true;
+                            break;
+                        case "4":
+                            System.out.println("Izqueirda");
+                            up    = false; 
+                            down  = false; 
+                            left  = true; 
+                            right = false;
+                            break;
+                        // Add more cases for other signals
+                        //default:
+                            //System.out.println("Unknown signal: " + receivedMessage);
+                    }
+                }
+            }
+        });
+        timer.start();
+    }
    
     void direcction(){
         window.addKeyListener(new KeyListener() {
@@ -580,7 +632,9 @@ public class game {
         powerUpClient.allowConnection = false; 
         winnerClient.allowConnection = false; 
         gamePanel.setVisible(false);
+        arduinoReader.allowConnection = false; 
         window.remove(gamePanel); 
+
         if (type==2 || hasLose){
         
         parent.setVisible(true);   

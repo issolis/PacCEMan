@@ -27,6 +27,8 @@ int pointsNeeded = 0;
 
 int won = 0; 
 
+int direction = 0; 
+
 int matrix[15][15] = {
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -585,7 +587,7 @@ void receiveMessage() {
 
     if (bytesRead > 0) {
         buffer[bytesRead] = '\0';
-        //printf("Mensaje del cliente: %s\n", buffer);
+        printf("Mensaje del cliente: %s\n", buffer);
         const char* response = "RECIBIDO";
         if (buffer[0]=='p'){
             ended = 0;
@@ -894,6 +896,29 @@ void receiveMessage() {
             printf("\n");
             printf("%s", cadena);
             response = cadena; 
+            
+        }
+
+        else if(buffer[0] =='x'){
+            if(buffer[1]=='1')
+                response ="1";
+            else if(buffer[1]=='2')
+                direction = 2;
+            else if(buffer[1]=='3')
+                direction = 3;
+            else if(buffer[1]=='4')
+                response ="1";
+        printf("%i", direction);
+        }
+        else if (buffer[0]=='d'){
+            if (direction==1)
+                response ="1";
+            else if (direction==2)
+                response ="2";
+            else if (direction==3)
+                response ="3";
+            else if (direction==4)
+                response ="4";
             
         }
         send(clientSocket, response, strlen(response), 0);
